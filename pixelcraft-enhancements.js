@@ -261,8 +261,8 @@
   $('fileInput').addEventListener('change',e=>routeBatch(e.target.files),true);
   $('dropZone').addEventListener('drop',e=>{if(e.dataTransfer?.files?.length>1)routeBatch(e.dataTransfer.files);},true);
 
-  // Privacy preferences: essential storage only by default. Optional scripts are not
-  // shipped in this build; future integrations can consult PixelCraftConsent.allows().
+  // Privacy preferences: essential storage only by default. Advertising is loaded
+  // only after explicit consent; analytics is not integrated.
   const consent=$('cookieConsent'), consentKey='pixelcraft-consent-v2';
   let consentState={choice:'unset',essential:true,analytics:false,advertising:false,updatedAt:null};
   function readConsent(){
@@ -277,14 +277,34 @@
   consentState=readConsent();
   const paintConsentControls=()=>{$('pcConsentAnalytics').checked=Boolean(consentState.analytics);$('pcConsentAds').checked=Boolean(consentState.advertising);};
   const emitConsent=()=>window.dispatchEvent(new CustomEvent('pixelcraft:consentchange',{detail:{...consentState}}));
+
+  // Basic script gate: do not request AdSense until advertising is explicitly enabled.
+  // This is not a Google-certified consent-management platform (CMP).
+  const ADSENSE_CLIENT='ca-pub-2287896200203519';
+  let adsenseLoadStarted=false;
+  function loadAdSenseAfterConsent(){
+    if(!consentState.advertising || adsenseLoadStarted || document.getElementById('pixelcraft-adsense-script')) return;
+    adsenseLoadStarted=true;
+    window.adsbygoogle=window.adsbygoogle||[];
+    window.adsbygoogle.requestNonPersonalizedAds=1;
+    const script=document.createElement('script');
+    script.id='pixelcraft-adsense-script';
+    script.async=true;
+    script.crossOrigin='anonymous';
+    script.src='https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client='+ADSENSE_CLIENT;
+    script.onerror=()=>{adsenseLoadStarted=false;script.remove();};
+    document.head.appendChild(script);
+  }
   const saveConsent=(choice,analytics=false,ads=false)=>{
     consentState={choice,essential:true,analytics:Boolean(analytics),advertising:Boolean(ads),updatedAt:new Date().toISOString()};
     try{localStorage.setItem(consentKey,JSON.stringify(consentState));}catch(_){toast('Your preference is active for this visit, but browser storage is unavailable.');}
+    if(consentState.advertising)loadAdSenseAfterConsent();
     paintConsentControls();$('consentPreferences').hidden=true;$('cookieSettings').setAttribute('aria-expanded','false');consent.classList.remove('show');emitConsent();
   };
   window.PixelCraftConsent={get:()=>({...consentState}),allows:category=>category==='essential'?true:category==='analytics'?Boolean(consentState.analytics):category==='advertising'?Boolean(consentState.advertising):false};
   paintConsentControls();
   if(consentState.choice==='unset')consent.classList.add('show');
+  if(consentState.advertising)loadAdSenseAfterConsent();
   $('acceptCookies').addEventListener('click',()=>saveConsent('accepted-optional',true,true));
   $('rejectCookies').addEventListener('click',()=>saveConsent('essential-only',false,false));
   $('cookieSettings').addEventListener('click',()=>{const panel=$('consentPreferences');panel.hidden=!panel.hidden;$('cookieSettings').setAttribute('aria-expanded',String(!panel.hidden));if(!panel.hidden)paintConsentControls();});
