@@ -1,0 +1,1490 @@
+<!DOCTYPE html>
+<html lang="en">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2287896200203519"
+     crossorigin="anonymous"></script>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0b0e14" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <meta name="description" content="Free all-in-one online photo editor. Crop, resize, compress, convert, watermark and prepare passport photos. Images are processed locally in your browser." />
+  <meta name="keywords" content="photo resizer, image cropper, image compressor, image converter, passport photo maker, watermark editor, background remover" />
+  <meta property="og:title" content="PixelCraft Studio — All-in-One Online Photo Editor" />
+  <meta property="og:description" content="Resize, crop, compress, convert and edit photos in your browser." />
+  <meta property="og:type" content="website" />
+  <title>PixelCraft Studio — All-in-One Online Photo Editor</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #0d1018;
+      --panel: #151a26;
+      --panel-2: #1b2130;
+      --panel-3: #222a3b;
+      --line: rgba(255,255,255,.09);
+      --text: #f4f6fb;
+      --muted: #9aa5b8;
+      --soft: #69758b;
+      --accent: #9b8cff;
+      --accent-2: #6d5ce7;
+      --green: #7de0bd;
+      --danger: #ff8e9b;
+      --radius: 18px;
+      --shadow: 0 18px 60px rgba(0,0,0,.28);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; min-height: 100vh; color: var(--text);
+      background: radial-gradient(1000px 620px at 72% -12%, rgba(109,92,231,.15), transparent 62%), var(--bg);
+    }
+    button, input, select { font: inherit; }
+    button { cursor: pointer; }
+    .app-shell { min-height: 100vh; display: flex; flex-direction: column; }
+    header {
+      height: 76px; padding: 0 clamp(18px, 4vw, 56px); display: flex; align-items: center;
+      justify-content: space-between; border-bottom: 1px solid var(--line); background: rgba(13,16,24,.78);
+      backdrop-filter: blur(18px); position: sticky; top: 0; z-index: 10;
+    }
+    .brand { display: flex; align-items: center; gap: 12px; font-weight: 800; letter-spacing: -.04em; font-size: 18px; }
+    .brand-mark { width: 34px; height: 34px; border-radius: 11px; display: grid; place-items: center; background: linear-gradient(135deg, #b8aaff, #6958df); box-shadow: 0 7px 22px rgba(117,96,236,.35); }
+    .brand-mark svg { width: 20px; height: 20px; }
+    .brand span span { color: var(--accent); }
+    .header-right { display: flex; align-items: center; gap: 14px; }
+    .privacy { color: var(--muted); font-size: 12px; display: flex; gap: 7px; align-items: center; }
+    .privacy svg { color: var(--green); width: 15px; height: 15px; }
+    .top-button, .secondary-button, .icon-button, .primary-button, .preset, .seg-button {
+      border: 1px solid var(--line); border-radius: 11px; color: var(--text); background: var(--panel-2);
+      transition: .18s ease; display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .top-button { padding: 10px 14px; font-size: 13px; font-weight: 650; }
+    button:hover:not(:disabled) { border-color: rgba(177,163,255,.6); transform: translateY(-1px); }
+    button:disabled { opacity: .42; cursor: not-allowed; }
+    main { width: min(1500px, 100%); margin: 0 auto; padding: 34px clamp(16px, 3vw, 42px) 40px; flex: 1; }
+    .intro { display: flex; justify-content: space-between; align-items: end; gap: 20px; margin: 0 2px 25px; }
+    .eyebrow { text-transform: uppercase; letter-spacing: .16em; font-size: 10px; font-weight: 800; color: var(--accent); margin-bottom: 9px; }
+    h1 { margin: 0; font-size: clamp(26px, 3vw, 36px); letter-spacing: -.055em; line-height: 1.08; }
+    .subtitle { color: var(--muted); font-size: 13px; margin: 9px 0 0; }
+    .workspace { display: grid; grid-template-columns: 340px minmax(0,1fr); gap: 20px; align-items: start; }
+    .sidebar { display: flex; flex-direction: column; gap: 14px; }
+    .panel { border: 1px solid var(--line); background: linear-gradient(180deg, rgba(25,31,45,.97), rgba(20,25,37,.97)); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; }
+    .panel-section { padding: 18px; border-bottom: 1px solid var(--line); }
+    .panel-section:last-child { border-bottom: 0; }
+    .section-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 15px; }
+    .section-title { font-weight: 750; font-size: 13px; letter-spacing: -.01em; }
+    .section-note { font-size: 10px; color: var(--soft); }
+    .field-label { display: block; color: var(--muted); font-size: 11px; font-weight: 650; margin-bottom: 7px; }
+    .dimension-row { display: grid; grid-template-columns: 1fr 34px 1fr; gap: 8px; align-items: end; }
+    .input-wrap { position: relative; }
+    .input-wrap input, .select-control, .text-control {
+      width: 100%; min-width: 0; border: 1px solid var(--line); outline: none; color: var(--text); background: #101520;
+      border-radius: 10px; padding: 11px 10px; font-size: 13px;
+    }
+    .input-wrap input:focus, .select-control:focus, .text-control:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(155,140,255,.12); }
+    .input-unit { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: var(--soft); font-size: 10px; pointer-events: none; }
+    .lock-button { width: 34px; height: 39px; border-radius: 10px; color: var(--accent); }
+    .lock-button svg { width: 15px; height: 15px; }
+    .helper-line { min-height: 16px; margin-top: 9px; color: var(--soft); font-size: 10px; display: flex; justify-content: space-between; }
+    .preset-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }
+    .preset { min-height: 43px; padding: 8px 9px; text-align: left; justify-content: flex-start; font-size: 10px; color: #dce1ed; line-height: 1.3; }
+    .preset small { display: block; color: var(--soft); font-size: 9px; margin-top: 2px; }
+    .preset.active { background: rgba(155,140,255,.14); border-color: rgba(155,140,255,.55); color: #fff; }
+    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .control-group { min-width: 0; }
+    .select-control { padding: 10px 9px; font-size: 11px; }
+    .format-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .slider-block { margin-top: 15px; }
+    .slider-head { display: flex; justify-content: space-between; align-items: center; color: var(--muted); font-size: 11px; margin-bottom: 8px; }
+    .slider-value { color: #e5e0ff; font-variant-numeric: tabular-nums; }
+    input[type="range"] { width: 100%; accent-color: var(--accent); cursor: pointer; margin: 0; }
+    .edit-tools { display: grid; grid-template-columns: repeat(4,1fr); gap: 7px; }
+    .icon-button { min-height: 55px; flex-direction: column; gap: 5px; padding: 7px 4px; font-size: 9px; color: var(--muted); }
+    .icon-button svg { width: 17px; height: 17px; color: #ded9ff; }
+    .icon-button:active { background: rgba(155,140,255,.2); }
+    .action-row { display: flex; gap: 8px; }
+    .secondary-button { padding: 10px 12px; font-size: 11px; font-weight: 650; flex: 1; }
+    .primary-button { border: 0; background: linear-gradient(135deg, #a99aff, #6f5be7); padding: 13px 16px; color: white; font-size: 12px; font-weight: 800; box-shadow: 0 9px 25px rgba(105,83,226,.25); }
+    .primary-button:hover:not(:disabled) { background: linear-gradient(135deg, #b8acff, #7c69ef); }
+    .download-button { width: 100%; margin-top: 10px; min-height: 45px; }
+    .export-note { color: var(--soft); font-size: 10px; line-height: 1.5; margin-top: 9px; }
+    .canvas-column { min-width: 0; }
+    .canvas-panel { min-height: 660px; display: flex; flex-direction: column; }
+    .canvas-toolbar { min-height: 58px; padding: 0 18px; display: flex; align-items: center; justify-content: space-between; gap: 12px; border-bottom: 1px solid var(--line); }
+    .file-meta { display: flex; align-items: center; gap: 10px; min-width: 0; }
+    .file-icon { width: 31px; height: 31px; border-radius: 9px; background: rgba(155,140,255,.13); color: var(--accent); display: grid; place-items: center; flex: 0 0 auto; }
+    .file-icon svg { width: 16px; height: 16px; }
+    .file-name { font-size: 11px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 260px; }
+    .file-detail { color: var(--soft); font-size: 9px; margin-top: 3px; }
+    .toolbar-right { display: flex; align-items: center; gap: 12px; }
+    .zoom-label { color: var(--muted); font-size: 10px; font-variant-numeric: tabular-nums; }
+    .canvas-stage {
+      flex: 1; min-height: 565px; display: grid; place-items: center; padding: 30px;
+      background-color: #111622;
+      background-image: radial-gradient(rgba(255,255,255,.055) .8px, transparent .8px); background-size: 17px 17px;
+      position: relative; overflow: hidden;
+    }
+    .canvas-stage.dragging { outline: 2px dashed var(--accent); outline-offset: -12px; background-color: #1a1b31; }
+    .empty-state { width: min(440px,100%); text-align: center; padding: 36px 24px; border: 1px dashed rgba(184,172,255,.38); border-radius: 20px; background: rgba(24,29,43,.65); }
+    .upload-illustration { width: 74px; height: 74px; display: grid; place-items: center; border-radius: 22px; margin: 0 auto 20px; background: linear-gradient(145deg, rgba(176,161,255,.2), rgba(109,92,231,.08)); color: #c4baff; }
+    .upload-illustration svg { width: 34px; height: 34px; }
+    .empty-state h2 { font-size: 18px; margin: 0 0 8px; letter-spacing: -.03em; }
+    .empty-state p { color: var(--muted); font-size: 11px; line-height: 1.65; margin: 0 auto 18px; max-width: 290px; }
+    .upload-main { margin: 0 auto; padding: 12px 18px; }
+    .file-types { color: var(--soft); font-size: 9px; margin-top: 13px; }
+    #previewCanvas { display: none; max-width: 100%; max-height: 550px; width: auto; height: auto; object-fit: contain; box-shadow: 0 22px 55px rgba(0,0,0,.38); background-color: transparent; background-image: linear-gradient(45deg,#313848 25%,transparent 25%),linear-gradient(-45deg,#313848 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#313848 75%),linear-gradient(-45deg,transparent 75%,#313848 75%); background-size: 18px 18px; background-position: 0 0,0 9px,9px -9px,-9px 0; }
+    .crop-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
+    .crop-actions .primary-button, .crop-actions .secondary-button { min-height: 40px; }
+    .crop-ratio-row { margin-top: 2px; }
+    .crop-live-readout { color: #d9d3ff; font-size: 10px; font-variant-numeric: tabular-nums; margin-top: 10px; }
+    .crop-live-note { color: var(--soft); font-size: 9px; line-height: 1.5; margin-top: 5px; }
+    .crop-overlay { position: absolute; z-index: 4; display: none; touch-action: none; user-select:none; }
+    .crop-overlay.active { display: block; }
+    .crop-frame { position: absolute; left: 10%; top: 10%; width: 80%; height: 80%; border: 2px solid #fff; box-shadow: 0 0 0 9999px rgba(3,5,12,.58), 0 0 0 1px rgba(110,92,231,.9), 0 0 22px rgba(0,0,0,.35); cursor: move; touch-action: none; user-select:none; }
+    .crop-grid { position: absolute; inset: 0; pointer-events: none; background: linear-gradient(to right, transparent 33.15%, rgba(255,255,255,.65) 33.33%, transparent 33.5%, transparent 66.48%, rgba(255,255,255,.65) 66.66%, transparent 66.84%), linear-gradient(to bottom, transparent 33.15%, rgba(255,255,255,.65) 33.33%, transparent 33.5%, transparent 66.48%, rgba(255,255,255,.65) 66.66%, transparent 66.84%); }
+    .crop-handle { position: absolute; width: 13px; height: 13px; border: 2px solid #6654e6; border-radius: 4px; background: #fff; box-shadow: 0 1px 7px rgba(0,0,0,.45); z-index: 2; touch-action: none; }
+    .crop-handle.nw { left: -7px; top: -7px; cursor: nwse-resize; }
+    .crop-handle.n { left: 50%; top: -7px; transform: translateX(-50%); cursor: ns-resize; }
+    .crop-handle.ne { right: -7px; top: -7px; cursor: nesw-resize; }
+    .crop-handle.e { right: -7px; top: 50%; transform: translateY(-50%); cursor: ew-resize; }
+    .crop-handle.se { right: -7px; bottom: -7px; cursor: nwse-resize; }
+    .crop-handle.s { left: 50%; bottom: -7px; transform: translateX(-50%); cursor: ns-resize; }
+    .crop-handle.sw { left: -7px; bottom: -7px; cursor: nesw-resize; }
+    .crop-handle.w { left: -7px; top: 50%; transform: translateY(-50%); cursor: ew-resize; }
+    .crop-overlay-hint { position: absolute; left: 50%; top: -29px; transform: translateX(-50%); background: rgba(10,13,22,.9); color: #fff; border: 1px solid rgba(255,255,255,.2); border-radius: 7px; padding: 5px 8px; font-size: 9px; white-space: nowrap; pointer-events: none; }
+    .stage-hint { position: absolute; bottom: 14px; left: 18px; color: #6e7890; font-size: 9px; }
+    .canvas-footer { min-height: 43px; padding: 0 18px; display: flex; align-items: center; justify-content: space-between; gap: 12px; border-top: 1px solid var(--line); color: var(--soft); font-size: 9px; }
+    .status { display: flex; align-items: center; gap: 7px; }
+    .status-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); }
+    .hidden { display: none !important; }
+    [hidden] { display: none !important; }
+    footer { padding: 17px 24px 25px; text-align: center; color: #59647a; font-size: 10px; }
+    #fileInput { display: none; }
+    .toast { position: fixed; left: 50%; bottom: 25px; transform: translate(-50%, 20px); opacity: 0; pointer-events: none; padding: 11px 16px; border: 1px solid rgba(125,224,189,.3); background: #172a2a; color: #c9ffeb; border-radius: 12px; font-size: 11px; box-shadow: var(--shadow); transition: .25s; z-index: 20; }
+    .toast.show { opacity: 1; transform: translate(-50%,0); }
+
+    .main-tabs { display:flex; gap:8px; margin:0 0 18px; flex-wrap:wrap; }
+    .main-tab { border:1px solid var(--line); color:var(--muted); background:rgba(25,31,45,.8); border-radius:12px; padding:11px 16px; font-weight:750; font-size:12px; }
+    .main-tab.active { color:#fff; border-color:rgba(155,140,255,.7); background:rgba(155,140,255,.16); }
+    .ad-slot { border:1px dashed rgba(255,255,255,.17); background:rgba(20,25,37,.48); border-radius:13px; min-height:76px; display:flex; align-items:center; justify-content:center; gap:9px; flex-wrap:wrap; padding:12px 16px; color:var(--muted); margin-bottom:20px; text-align:center; }
+    .ad-slot strong { font-size:11px; color:#d9d3ff; } .ad-slot small { font-size:10px; color:var(--soft); }
+    .ad-label { font-size:8px; letter-spacing:.14em; color:#7b8498; border:1px solid var(--line); border-radius:4px; padding:3px 5px; }
+    .ad-footer { margin-top:24px; } .ad-inline { margin-top:16px; }
+    .tools-heading { margin:4px 2px 22px; } .tools-heading h2 { margin:0; font-size:clamp(23px,3vw,32px); letter-spacing:-.05em; }
+    .tools-layout { display:grid; grid-template-columns:230px minmax(0,1fr); gap:18px; align-items:start; }
+    .tool-nav { padding:10px; display:flex; flex-direction:column; gap:6px; position:sticky; top:92px; }
+    .tool-nav-button { min-height:44px; border:1px solid transparent; background:transparent; color:var(--muted); border-radius:10px; text-align:left; padding:10px 12px; display:flex; gap:10px; align-items:center; font-size:11px; font-weight:700; }
+    .tool-nav-button span { color:#c1b7ff; font-size:17px; width:20px; text-align:center; } .tool-nav-button.active { color:#fff; background:rgba(155,140,255,.14); border-color:rgba(155,140,255,.35); }
+    .tool-nav-note { margin:9px 6px 4px; padding-top:12px; border-top:1px solid var(--line); color:var(--soft); font-size:9px; line-height:1.55; }
+    .tool-panel .panel-section { padding:24px; } .tool-panel .section-title { font-size:18px; } .tool-panel .section-note { margin-top:5px; }
+    .tool-icon { width:38px; height:38px; display:grid; place-items:center; border-radius:12px; background:rgba(155,140,255,.13); color:#d3cbff; font-size:20px; }
+    .tool-description { color:var(--muted); font-size:12px; line-height:1.65; max-width:700px; margin:-2px 0 20px; }
+    .file-control { display:block; width:100%; border:1px dashed rgba(184,172,255,.4); border-radius:10px; background:#101520; padding:12px; color:var(--muted); font-size:11px; }
+    .tool-fields { margin-top:16px; } .tool-run { width:100%; min-height:45px; margin-top:18px; }
+    .tool-status { color:var(--soft); font-size:10px; line-height:1.55; margin-top:12px; min-height:15px; }
+    .result-list { display:grid; gap:8px; margin-top:12px; } .result-item { display:flex; justify-content:space-between; align-items:center; gap:12px; padding:10px 12px; border:1px solid var(--line); border-radius:10px; background:rgba(12,16,25,.45); }
+    .result-name { min-width:0; font-size:10px; color:#e8eaf2; overflow-wrap:anywhere; } .result-detail { color:var(--soft); display:block; font-size:9px; margin-top:3px; } .result-item a { flex:0 0 auto; color:#d3cbff; font-size:10px; font-weight:750; text-decoration:none; border:1px solid rgba(155,140,255,.4); border-radius:8px; padding:7px 9px; }
+    .passport-preview-wrap,.background-preview-wrap { margin-top:17px; border:1px solid var(--line); border-radius:12px; padding:14px; background:#101520; display:grid; place-items:center; }
+    #passportCanvas { max-height:300px; max-width:100%; width:auto; height:auto; background:white; box-shadow:0 8px 25px #0006; } .passport-meta { color:var(--soft); font-size:9px; text-align:center; margin-top:10px; }
+    #backgroundCanvas,#watermarkCanvas { max-width:100%; max-height:430px; object-fit:contain; background-color:transparent; background-image:linear-gradient(45deg,#313848 25%,transparent 25%),linear-gradient(-45deg,#313848 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#313848 75%),linear-gradient(-45deg,transparent 75%,#313848 75%); background-size:18px 18px; background-position:0 0,0 9px,9px -9px,-9px 0; }
+    .sample-indicator { color:var(--muted); font-size:10px; margin-top:10px; display:flex; align-items:center; gap:8px; } .sample-chip { width:15px; height:15px; border:1px solid #fff5; border-radius:4px; display:inline-block; }
+    footer a { color:#bdb2ff; text-decoration:none; margin:0 4px; } footer a:hover { text-decoration:underline; }
+    @media (max-width:760px) { .tools-layout { grid-template-columns:1fr; } .tool-nav { position:static; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); } .tool-nav-note { grid-column:1/-1; } .tool-panel .panel-section { padding:18px; } .ad-slot { gap:6px; } }
+    @media (max-width:430px) { .main-tab { flex:1; padding:10px 8px; font-size:10px; } .tool-nav-button { font-size:10px; padding:9px 7px; } .result-item { align-items:flex-start; } }
+
+
+    .guides-section { margin:36px 2px 24px; } .guides-section h2 { margin:0; font-size:clamp(22px,2.6vw,30px); letter-spacing:-.045em; }
+    .guide-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; margin-top:20px; }
+    .guide-card { border:1px solid var(--line); border-radius:14px; background:rgba(21,26,38,.72); padding:17px; }
+    .guide-card h3 { font-size:12px; margin:0 0 8px; letter-spacing:-.01em; } .guide-card p,.guide-faq p { color:var(--muted); font-size:10px; line-height:1.75; margin:0; }
+    .guide-faq { padding:14px 16px; border:1px solid var(--line); background:rgba(21,26,38,.48); border-radius:11px; margin-top:8px; }
+    .guide-faq summary { cursor:pointer; font-size:11px; font-weight:700; } .guide-faq p { margin-top:10px; }
+    @media(max-width:900px){.guide-grid{grid-template-columns:repeat(2,minmax(0,1fr));}}
+    @media(max-width:540px){.guide-grid{grid-template-columns:1fr;}}
+
+    @media (max-width: 980px) {
+      .workspace { grid-template-columns: 300px minmax(0,1fr); }
+      .canvas-panel { min-height: 600px; }
+      .canvas-stage { min-height: 500px; padding: 20px; }
+    }
+    @media (max-width: 760px) {
+      header { height: 64px; padding: 0 16px; }
+      .privacy { display: none; }
+      main { padding-top: 25px; }
+      .intro { align-items: start; flex-direction: column; margin-bottom: 18px; }
+      .workspace { grid-template-columns: 1fr; }
+      .sidebar { order: 2; }
+      .canvas-column { order: 1; }
+      .canvas-panel { min-height: 450px; }
+      .canvas-stage { min-height: 380px; }
+      #previewCanvas { max-height: 350px; }
+      .preset-grid { grid-template-columns: repeat(3,1fr); }
+      .canvas-toolbar { padding: 0 12px; }
+      .file-name { max-width: 160px; }
+    }
+    @media (max-width: 430px) {
+      .brand { font-size: 16px; }
+      .top-button { padding: 9px 10px; font-size: 11px; }
+      .preset-grid { grid-template-columns: 1fr 1fr; }
+      .canvas-stage { min-height: 320px; padding: 14px; }
+      .canvas-panel { min-height: 390px; }
+      .toolbar-right .zoom-label { display: none; }
+    }
+
+    /* PixelCraft Studio responsive editor refresh */
+    :root{--bg:#0b0e14;--panel:#111722;--panel-2:#171f2d;--panel-3:#202b3c;--accent:#a78bfa;--accent-2:#7c5ce8;--line:rgba(255,255,255,.085);--radius:16px}
+    body{background:radial-gradient(900px 520px at 56% -12%,rgba(124,92,232,.17),transparent 68%),#0b0e14}
+    header{height:68px;background:rgba(11,14,20,.88);padding:0 clamp(14px,3vw,34px)}
+    .brand{font-size:19px;letter-spacing:-.045em}.brand-mark{border-radius:10px}
+    main{width:min(1680px,100%);padding:26px clamp(12px,2vw,28px) 34px}
+    .intro{margin-bottom:18px}.intro h1{font-size:clamp(25px,3vw,34px)}.subtitle{font-size:13px}
+    .workspace{grid-template-columns:250px minmax(0,1fr) 270px;gap:14px;align-items:start}
+    .sidebar{gap:10px;min-width:0}.canvas-column{grid-column:2;grid-row:1;min-width:0}.export-sidebar{grid-column:3;grid-row:1;min-width:0;display:flex;flex-direction:column;gap:10px}
+    .panel{border-radius:15px;background:linear-gradient(180deg,rgba(19,26,38,.98),rgba(15,21,31,.98));box-shadow:0 12px 36px rgba(0,0,0,.22)}
+    .panel-section{padding:15px}.section-title{font-size:12px}.section-note{font-size:9px}
+    .editor-tabbar{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px;padding:7px;background:#101622;border:1px solid var(--line);border-radius:13px;margin-bottom:9px}
+    .editor-tab{display:flex;align-items:center;gap:8px;justify-content:flex-start;min-height:38px;padding:8px 9px;border:1px solid transparent;border-radius:9px;background:transparent;color:#9ba8bd;font-size:10px;font-weight:700;text-align:left}
+    .editor-tab i,.editor-tab svg{width:14px;height:14px;flex:0 0 auto}.editor-tab.active{color:#f7f4ff;background:rgba(167,139,250,.15);border-color:rgba(167,139,250,.3)}
+    .editor-tab-panel{display:none;min-width:0}.editor-tab-panel.active{display:flex;flex-direction:column;gap:10px}
+    .editor-tab-panel>.panel,.editor-tab-panel>.panel-section{width:100%}
+    .canvas-panel{min-height:680px}.canvas-toolbar{min-height:58px;flex-wrap:wrap;padding:9px 14px}
+    .canvas-stage{min-height:570px;background-color:#0d1420;background-size:18px 18px;padding:22px}
+    #previewCanvas{transform-origin:center center;transition:transform .16s ease;max-height:min(66vh,680px);max-width:100%;touch-action:none}
+    .toolbar-right{flex-wrap:wrap;justify-content:flex-end}.canvas-actions{display:flex;align-items:center;gap:6px;flex-wrap:wrap}.mini-action{height:31px;min-width:32px;padding:0 9px;border:1px solid var(--line);border-radius:8px;background:#182131;color:#d7dbea;font-size:10px;display:inline-flex;align-items:center;justify-content:center;gap:5px;white-space:nowrap}.mini-action i,.mini-action svg{width:13px;height:13px;flex:0 0 auto}.mini-action:disabled{opacity:.35}.mini-action.active{color:#fff;background:rgba(155,140,255,.2);border-color:rgba(177,163,255,.7)}
+    .export-stat{display:flex;justify-content:space-between;gap:8px;padding:8px 0;border-bottom:1px solid var(--line);font-size:10px;color:var(--muted)}.export-stat strong{color:#eef0f8;font-variant-numeric:tabular-nums}
+    .trust-strip{display:flex;align-items:center;gap:8px;border:1px solid rgba(52,211,153,.19);background:rgba(16,185,129,.06);color:#a7f3d0;padding:10px 11px;border-radius:11px;font-size:10px;line-height:1.4}
+    .ad-slot{border-style:dashed;min-height:90px;max-width:100%;margin:0 auto 17px}.ad-slot strong{font-size:11px}.ad-banner{min-height:90px;max-width:728px}.ad-inline{min-height:250px;max-width:300px;flex-direction:column}.ad-footer{min-height:90px;max-width:728px}
+    .new-control-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.new-control-grid .full{grid-column:1/-1}
+    .control-card{background:rgba(255,255,255,.025);border:1px solid var(--line);border-radius:12px;padding:11px}
+    .segmented{display:flex;gap:5px;flex-wrap:wrap}.segmented button{padding:7px 9px;border:1px solid var(--line);border-radius:8px;background:#111927;color:#aeb8ca;font-size:10px}.segmented button.active{background:rgba(167,139,250,.18);color:white;border-color:rgba(167,139,250,.45)}
+    .tool-description{max-width:780px}
+    .modal-backdrop{position:fixed;inset:0;background:rgba(2,6,14,.72);backdrop-filter:blur(9px);z-index:50;display:none;align-items:center;justify-content:center;padding:18px}.modal-backdrop.open{display:flex}
+    .modal-card{width:min(650px,100%);background:#121a28;border:1px solid var(--line);border-radius:20px;padding:22px;box-shadow:0 30px 100px rgba(0,0,0,.5)}
+    .modal-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:17px}.modal-tool{border:1px solid var(--line);background:#182233;border-radius:13px;padding:16px 12px;color:#f2f3fb;text-align:left;min-height:112px}.modal-tool i{display:block;width:20px;height:20px;color:#c4b5fd;margin-bottom:12px}.modal-tool strong{font-size:11px;display:block}.modal-tool small{display:block;color:var(--muted);font-size:9px;line-height:1.4;margin-top:5px}
+    .consent-banner{position:fixed;z-index:70;left:16px;right:16px;bottom:16px;max-width:760px;margin:0 auto;padding:16px;background:#171f2d;border:1px solid rgba(255,255,255,.13);border-radius:16px;box-shadow:0 18px 70px rgba(0,0,0,.5);display:none}.consent-banner.show{display:block}.consent-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.consent-actions button{padding:9px 12px;border-radius:9px;border:1px solid var(--line);font-size:10px;font-weight:700}.consent-accept{background:#8b70ec;color:#fff;border-color:transparent!important}.consent-reject{background:#202a3a;color:#edf0f7}.consent-settings{background:transparent;color:#c6baff}
+    .editor-tab-panel .panel{box-shadow:none}.helper-line,.export-note{line-height:1.55}
+    .tool-nav-button{min-height:39px}.tool-nav-button.active{background:rgba(167,139,250,.15)}
+    footer{line-height:2;padding-top:25px} footer a{color:#a78bfa;text-decoration:none}footer a:hover{text-decoration:underline}
+    @media(max-width:1200px){.workspace{grid-template-columns:230px minmax(0,1fr) 245px;gap:10px}.editor-tab{font-size:9px;padding:7px}.canvas-stage{min-height:500px}}
+    @media(max-width:960px){.workspace{grid-template-columns:220px minmax(0,1fr)}.export-sidebar{grid-column:1/-1;grid-row:3;display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.canvas-column{grid-column:2;grid-row:1}.sidebar{grid-column:1;grid-row:1}.canvas-stage{min-height:480px}}
+    @media(max-width:700px){.workspace{display:flex;flex-direction:column}.canvas-column{order:0;width:100%}.sidebar{order:1;width:100%}.export-sidebar{order:2;width:100%;display:grid;grid-template-columns:1fr}.canvas-panel{min-height:410px}.canvas-stage{min-height:360px;padding:12px}.canvas-toolbar{align-items:flex-start}.toolbar-right{width:100%;justify-content:space-between}.modal-grid{grid-template-columns:1fr 1fr}.editor-tabbar{grid-template-columns:repeat(2,minmax(0,1fr))}.ad-inline{min-height:180px}}
+    @media(max-width:430px){.header-right .privacy{display:none}.top-button{padding:8px 9px;font-size:10px}.modal-grid{grid-template-columns:1fr}.intro{align-items:flex-start}}
+
+
+    /* Final accessibility and small-screen refinements */
+    .footer-cookie-button{border:1px solid var(--line);border-radius:7px;background:transparent;color:#c9bcff;padding:4px 8px;font:inherit;font-size:11px;cursor:pointer}
+    .footer-cookie-button:hover{border-color:#a78bfa;color:#fff}
+    .consent-banner{max-height:min(78vh,620px);overflow:auto;padding:15px;left:12px;right:12px;bottom:12px}
+    .consent-intro{display:flex;gap:11px;align-items:flex-start}.consent-intro>i{width:21px;height:21px;color:#c4b5fd;flex:0 0 auto;margin-top:2px}
+    .consent-intro strong{font-size:13px}.consent-intro p{font-size:11px;color:#b5bfd0;line-height:1.55;margin:5px 0}.consent-intro a{font-size:10px;color:#c4b5fd}
+    #consentPreferences{margin-top:12px;padding-top:10px;border-top:1px solid var(--line)}.consent-choice{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.06)}.consent-choice strong{display:block;font-size:11px}.consent-choice small{display:block;color:#9aa5b8;font-size:9px;line-height:1.45;margin-top:2px}.switch-label{display:flex;align-items:center;gap:6px;color:#cbd5e1;font-size:10px;white-space:nowrap}.switch-label input{accent-color:#9b8cff;width:16px;height:16px}.consent-disclaimer{color:#929db0;font-size:9px;line-height:1.5;margin:10px 0}.consent-actions{justify-content:flex-end}.consent-actions button,.consent-save{min-height:36px;padding:8px 12px;border-radius:9px;font-size:10px;font-weight:750;cursor:pointer}.consent-reject{background:#202a3a;color:#edf0f7;border:1px solid #49566b}.consent-settings{background:transparent;color:#d8d0ff;border:1px solid #7463bc}.consent-accept,.consent-save{background:#8b70ec;color:#fff;border:1px solid transparent}.consent-save{width:100%;margin-top:8px}
+    .modal-card{max-height:calc(100dvh - 36px);overflow-y:auto;overscroll-behavior:contain}
+    .toolbar-right{min-width:0}.canvas-actions{min-width:0}.mini-action{touch-action:manipulation}
+    .tool-content,.tool-panel,.panel-section{min-width:0}.tool-nav-button{overflow-wrap:anywhere}
+    @media(max-width:700px){.workspace{gap:12px}.canvas-column{min-width:0}.canvas-toolbar{gap:9px}.toolbar-right{display:flex;flex-wrap:wrap;width:100%;gap:7px}.canvas-actions{flex:1 1 auto;justify-content:flex-start}.canvas-actions .mini-action{min-height:35px}.export-sidebar{display:grid;grid-template-columns:1fr!important}.tool-nav{grid-template-columns:repeat(2,minmax(0,1fr))}.tool-nav-button{min-width:0}.result-item{flex-wrap:wrap}.result-item a{margin-left:auto}.consent-actions{display:grid;grid-template-columns:1fr 1fr}.consent-actions button:last-child{grid-column:1/-1}.consent-banner{left:8px;right:8px;bottom:8px;max-height:80vh}}
+    @media(max-width:380px){main{padding-inline:10px}.brand{font-size:15px}.top-button{font-size:10px}.canvas-stage{padding:9px}.canvas-panel{min-height:360px}.canvas-stage{min-height:290px}.editor-tab{font-size:9px;padding:7px}.consent-actions{grid-template-columns:1fr}.consent-actions button:last-child{grid-column:auto}}
+    @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
+  </style>
+</head>
+<body>
+<div class="app-shell min-h-screen flex flex-col">
+  <header class="sticky top-0 z-10 flex items-center justify-between">
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>
+      </div>
+      <span>pixel<span>craft</span> studio</span>
+    </div>
+    <div class="header-right">
+      <div class="privacy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-11V5l-8-3-8 3v6c0 7 8 11 8 11Z"/><path d="m9 12 2 2 4-4"/></svg> 100% secure & private · files stay on your device</div>
+      <button class="top-button" id="openToolsModal" type="button"><i data-lucide="grid-2x2" style="width:15px;height:15px"></i> More tools</button><button class="top-button" id="topUpload" type="button"><i data-lucide="upload" style="width:15px;height:15px"></i> Open photo</button>
+    </div>
+  </header>
+
+  <main class="w-full mx-auto">
+    <div class="intro">
+      <div>
+        <div class="eyebrow">IMAGE WORKSPACE</div>
+        <h1>Create, refine and export every pixel.</h1>
+        <p class="subtitle">Resize, refine and export your images in one simple workspace.</p>
+      </div>
+    </div>
+
+    <nav class="main-tabs" aria-label="Studio sections">
+      <button class="main-tab active" data-view="editorView" type="button">✦ Editor</button>
+      <button class="main-tab" data-view="toolsView" type="button">▦ All tools</button>
+    </nav>
+    <div class="ad-slot ad-banner" aria-label="Advertisement">
+      <span class="ad-label">ADVERTISEMENT</span><strong>Ad space reserved</strong>
+      <small>Connect an approved Google AdSense account to display ads here.</small>
+    </div>
+    <section id="editorView">
+    <div class="workspace">
+      <aside class="sidebar">
+        <section class="panel">
+          <div class="panel-section">
+            <div class="section-heading"><div class="section-title">Canvas size</div><div class="section-note">OUTPUT DIMENSIONS</div></div>
+            <div class="dimension-row">
+              <div class="input-wrap"><label class="field-label" for="widthInput">Width</label><input id="widthInput" type="number" min="1" max="12000" value="1080"/><span class="input-unit">px</span></div>
+              <button class="icon-button lock-button" id="lockButton" type="button" aria-label="Unlock aspect ratio" title="Lock aspect ratio">
+                <svg id="lockIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+              </button>
+              <div class="input-wrap"><label class="field-label" for="heightInput">Height</label><input id="heightInput" type="number" min="1" max="12000" value="1080"/><span class="input-unit">px</span></div>
+            </div>
+            <div class="helper-line"><span id="ratioText">Aspect ratio —</span><span id="pixelCount">1.17 MP</span></div>
+          </div>
+          <div class="panel-section">
+            <div class="section-heading"><div class="section-title">Quick presets</div><div class="section-note">ONE-CLICK SIZES</div></div>
+            <div class="preset-grid" id="presetGrid">
+              <button class="preset" data-w="1080" data-h="1080">Instagram post<small>1080 × 1080</small></button>
+              <button class="preset" data-w="1640" data-h="624">Facebook cover<small>1640 × 624</small></button>
+              <button class="preset" data-w="1080" data-h="1920">Story / Reel<small>1080 × 1920</small></button>
+              <button class="preset" data-w="1280" data-h="720">YouTube thumbnail<small>1280 × 720</small></button>
+              <button class="preset" data-w="1920" data-h="1080">Full HD<small>1920 × 1080</small></button>
+              <button class="preset" data-w="1200" data-h="628">Social landscape<small>1200 × 628</small></button>
+              <button class="preset" data-w="2480" data-h="3508">A4 print<small>2480 × 3508</small></button>
+            </div>
+          </div>
+          <div class="panel-section">
+            <div class="section-heading"><div class="section-title">Resize behaviour</div></div>
+            <div class="two-col">
+              <div class="control-group"><label class="field-label" for="fitMode">Fit mode</label><select class="select-control" id="fitMode"><option value="cover">Fill & crop</option><option value="contain">Fit inside</option><option value="stretch">Stretch</option></select></div>
+              <div class="control-group"><label class="field-label" for="backgroundMode">Background</label><select class="select-control" id="backgroundMode"><option value="transparent">Transparent</option><option value="white">White</option><option value="black">Black</option></select></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel" id="cropPanel">
+          <div class="panel-section">
+            <div class="section-heading"><div class="section-title">Crop tool</div><div class="section-note">SELECT ON IMAGE</div></div>
+            <div class="crop-ratio-row">
+              <label class="field-label" for="cropRatio">Crop aspect ratio</label>
+              <select class="select-control" id="cropRatio">
+                <option value="free">Free</option>
+                <option value="original">Current canvas</option>
+                <option value="1">Square · 1:1</option>
+                <option value="0.8">Portrait · 4:5</option>
+                <option value="1.7777778">Landscape · 16:9</option>
+                <option value="0.5625">Story · 9:16</option>
+                <option value="1.5">Photo · 3:2</option>
+              </select>
+            </div>
+            <div class="crop-live-readout" id="cropReadout" aria-live="polite">Crop area: —</div>
+            <div class="crop-live-note">Choose a ratio, then click the Crop icon or Crop & Resize tab. The selection appears directly on your photo. Drag inside to move it or pull a handle to resize.</div>
+            <div class="crop-actions">
+              <button class="primary-button" id="applyCrop" type="button" disabled>Apply crop</button>
+              <button class="secondary-button" id="cancelCrop" type="button" disabled>Cancel</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-section">
+            <div class="section-heading"><div class="section-title">Transform</div><div class="section-note">ROTATE & FLIP</div></div>
+            <div class="edit-tools">
+              <button class="icon-button" id="rotateLeft" type="button" title="Rotate left"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 8v6h6"/><path d="M3.5 14a8.5 8.5 0 1 0 2-8L3 8"/></svg>Rotate left</button>
+              <button class="icon-button" id="rotateRight" type="button" title="Rotate right"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8v6h-6"/><path d="M20.5 14a8.5 8.5 0 1 1-2-8L21 8"/></svg>Rotate right</button>
+              <button class="icon-button" id="flipH" type="button" title="Flip horizontal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v18M3 6h6v12H3zM15 6h6v12h-6z"/></svg>Flip H</button>
+              <button class="icon-button" id="flipV" type="button" title="Flip vertical"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h18M6 3v6h12V3zM6 15v6h12v-6z"/></svg>Flip V</button>
+            </div>
+          </div>
+          <div class="panel-section">
+            <div class="section-heading"><div class="section-title">Adjust image</div><button class="secondary-button" id="resetAdjustments" type="button" style="flex:0 0 auto;padding:6px 9px;font-size:9px">Reset</button></div>
+            <div class="slider-block"><div class="slider-head"><label for="brightness">Brightness</label><span class="slider-value" id="brightnessValue">100%</span></div><input id="brightness" data-filter="brightness" type="range" min="0" max="200" value="100"/></div>
+            <div class="slider-block"><div class="slider-head"><label for="contrast">Contrast</label><span class="slider-value" id="contrastValue">100%</span></div><input id="contrast" data-filter="contrast" type="range" min="0" max="200" value="100"/></div>
+            <div class="slider-block"><div class="slider-head"><label for="saturation">Saturation</label><span class="slider-value" id="saturationValue">100%</span></div><input id="saturation" data-filter="saturate" type="range" min="0" max="200" value="100"/></div>
+            <div class="slider-block"><div class="slider-head"><label for="grayscale">Grayscale</label><span class="slider-value" id="grayscaleValue">0%</span></div><input id="grayscale" data-filter="grayscale" type="range" min="0" max="100" value="0"/></div>
+            <div class="slider-block"><div class="slider-head"><label for="sepia">Sepia</label><span class="slider-value" id="sepiaValue">0%</span></div><input id="sepia" data-filter="sepia" type="range" min="0" max="100" value="0"/></div>
+          </div>
+        </section>
+
+        <section class="panel" id="editorWatermarkPanel">
+          <div class="panel-section">
+            <div class="section-heading"><div class="section-title">Text watermark</div><div class="section-note">OPTIONAL OVERLAY</div></div>
+            <label class="field-label" for="editorWmText">Watermark text</label>
+            <input class="text-control" id="editorWmText" type="text" maxlength="80" placeholder="© Your name or brand" />
+            <div class="two-col" style="margin-top:12px">
+              <div><label class="field-label" for="editorWmPosition">Position</label><select class="select-control" id="editorWmPosition"><option value="bottom-right">Bottom right</option><option value="bottom-left">Bottom left</option><option value="top-right">Top right</option><option value="top-left">Top left</option><option value="center">Center</option><option value="tile">Repeat / tile</option></select></div>
+              <div><label class="field-label" for="editorWmColor">Text color</label><input id="editorWmColor" type="color" value="#ffffff" style="width:100%;height:38px;border:1px solid var(--line);border-radius:9px;background:#101520;padding:4px" /></div>
+            </div>
+            <div class="slider-block"><div class="slider-head"><label for="editorWmOpacity">Opacity</label><span class="slider-value" id="editorWmOpacityValue">65%</span></div><input id="editorWmOpacity" type="range" min="5" max="100" value="65" /></div>
+            <div class="slider-block"><div class="slider-head"><label for="editorWmSize">Text size</label><span class="slider-value" id="editorWmSizeValue">4%</span></div><input id="editorWmSize" type="range" min="1" max="12" value="4" /></div>
+            <div class="export-note">The watermark appears on the preview and exported image. Leave the text blank for no watermark.</div>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-section">
+            <div class="section-heading"><div class="section-title">Export image</div><div class="section-note">SAVE YOUR RESULT</div></div>
+            <div class="format-row">
+              <div><label class="field-label" for="formatSelect">File format</label><select class="select-control" id="formatSelect"><option value="image/jpeg">JPG</option><option value="image/png">PNG</option><option value="image/webp">WebP</option></select></div>
+              <div><label class="field-label" for="quality">Quality <span id="qualityValue">90%</span></label><input id="quality" type="range" min="10" max="100" value="90" style="margin-top:13px"/></div>
+            </div>
+            <button class="primary-button download-button" id="downloadButton" type="button" disabled><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5M12 15V3"/></svg> Download edited photo</button>
+            <div class="export-note">Your original photo is never changed. Export creates a new file with your selected dimensions and edits.</div>
+          </div>
+        </section>
+      </aside>
+
+      <section class="canvas-column">
+        <div class="panel canvas-panel">
+          <div class="canvas-toolbar">
+            <div class="file-meta">
+              <div class="file-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg></div>
+              <div style="min-width:0"><div class="file-name" id="fileName">No photo selected</div><div class="file-detail" id="fileDetails">Open an image to get started</div></div>
+            </div>
+            <div class="toolbar-right"><span class="zoom-label" id="canvasDimensions">Canvas —</span><button class="top-button" id="changePhoto" type="button" style="padding:8px 10px;font-size:10px" disabled>Change photo</button></div>
+          </div>
+          <div class="canvas-stage" id="dropZone">
+            <div class="empty-state" id="emptyState">
+              <div class="upload-illustration"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4m-5 5 5-5 5 5"/><path d="M20 16.5v2A1.5 1.5 0 0 1 18.5 20h-13A1.5 1.5 0 0 1 4 18.5v-2"/></svg></div>
+              <h2>Drop your photo here</h2>
+              <p>Bring an image into the workspace to resize it, adjust the look and export a crisp new version.</p>
+              <button class="primary-button upload-main" id="mainUpload" type="button">Choose a photo</button>
+              <div class="file-types">JPG · PNG · WEBP · Multiple photos supported</div>
+            </div>
+            <canvas id="previewCanvas" aria-label="Edited photo preview"></canvas>
+            <div class="crop-overlay" id="cropOverlay" aria-label="Interactive crop selection">
+              <div class="crop-frame" id="cropFrame">
+                <div class="crop-grid"></div>
+                <div class="crop-overlay-hint">Drag to move · handles to resize</div>
+                <span class="crop-handle nw" data-handle="nw"></span><span class="crop-handle n" data-handle="n"></span>
+                <span class="crop-handle ne" data-handle="ne"></span><span class="crop-handle e" data-handle="e"></span>
+                <span class="crop-handle se" data-handle="se"></span><span class="crop-handle s" data-handle="s"></span>
+                <span class="crop-handle sw" data-handle="sw"></span><span class="crop-handle w" data-handle="w"></span>
+              </div>
+            </div>
+            <div class="stage-hint" id="stageHint">Preview updates as you edit</div>
+          </div>
+          <div class="canvas-footer"><div class="status"><span class="status-dot"></span><span id="statusText">Ready for an image</span></div><span>Processed locally in your browser</span></div>
+        </div>
+      </section>
+    </div>
+    </section>
+
+    <section id="toolsView" class="hidden">
+      <div class="tools-heading">
+        <div><div class="eyebrow">MORE WAYS TO WORK</div><h2>One studio. Every image task.</h2><p class="subtitle">Process photos in batches, convert formats, prepare ID photos, remove simple solid backgrounds and add brand watermarks.</p></div>
+      </div>
+      <div class="tools-layout">
+        <aside class="tool-nav panel" aria-label="Photo tools">
+          <button class="tool-nav-button active" data-tool="batchTool" type="button"><span>▧</span> Batch resize</button>
+          <button class="tool-nav-button" data-tool="compressTool" type="button"><span>◫</span> Bulk compression</button>
+          <button class="tool-nav-button" data-tool="convertTool" type="button"><span>⇄</span> Format converter</button>
+          <button class="tool-nav-button" data-tool="passportTool" type="button"><span>▣</span> Passport photo</button>
+          <button class="tool-nav-button" data-tool="backgroundTool" type="button"><span>◐</span> Background remover</button>
+          <button class="tool-nav-button" data-tool="watermarkTool" type="button"><span>✎</span> Watermark editor</button>
+          <div class="tool-nav-note">Tools process files locally in your browser. No image upload server is used.</div>
+        </aside>
+        <div class="tool-content">
+          <section class="tool-panel panel" id="batchTool">
+            <div class="panel-section">
+              <div class="section-heading"><div><div class="section-title">Batch photo resizing</div><div class="section-note">RESIZE MANY PHOTOS AT ONCE</div></div><span class="tool-icon">▧</span></div>
+              <p class="tool-description">Select multiple images, choose an output size and prepare separate downloads for every processed photo.</p>
+              <label class="field-label" for="batchResizeFiles">Choose photos</label><input class="file-control" id="batchResizeFiles" type="file" accept="image/*" multiple />
+              <div class="two-col tool-fields">
+                <div><label class="field-label" for="batchResizePreset">Quick size</label><select class="select-control" id="batchResizePreset"><option value="1080x1080">Instagram square · 1080 × 1080</option><option value="1080x1920">Story / Reel · 1080 × 1920</option><option value="1280x720">YouTube thumbnail · 1280 × 720</option><option value="1920x1080">Full HD · 1920 × 1080</option><option value="custom">Custom dimensions</option></select></div>
+                <div><label class="field-label" for="batchFit">Fit behaviour</label><select class="select-control" id="batchFit"><option value="contain">Fit inside</option><option value="cover">Fill and crop</option><option value="stretch">Stretch</option></select></div>
+              </div>
+              <div class="two-col tool-fields" id="batchCustomDims" hidden><div><label class="field-label" for="batchWidth">Width (px)</label><input class="text-control" id="batchWidth" type="number" min="1" max="12000" value="1080" /></div><div><label class="field-label" for="batchHeight">Height (px)</label><input class="text-control" id="batchHeight" type="number" min="1" max="12000" value="1080" /></div></div>
+              <div class="two-col tool-fields"><div><label class="field-label" for="batchFormat">Output format</label><select class="select-control" id="batchFormat"><option value="image/jpeg">JPG</option><option value="image/png">PNG</option><option value="image/webp">WebP</option></select></div><div><label class="field-label" for="batchQuality">Quality <span id="batchQualityValue">90%</span></label><input id="batchQuality" type="range" min="10" max="100" value="90" /></div></div>
+              <button class="primary-button tool-run" id="runBatchResize" type="button">Resize selected photos</button>
+              <div class="tool-status" id="batchResizeStatus" aria-live="polite">Choose one or more images to begin.</div><div class="result-list" id="batchResizeResults"></div>
+            </div>
+          </section>
+
+          <section class="tool-panel panel hidden" id="compressTool">
+            <div class="panel-section">
+              <div class="section-heading"><div><div class="section-title">Bulk image compression</div><div class="section-note">REDUCE FILE SIZE</div></div><span class="tool-icon">◫</span></div>
+              <p class="tool-description">Re-encode multiple photos as JPG or WebP. Keep the original dimensions or cap the long edge. Already-optimized or very small source images may not get smaller, so compare the per-file sizes before using the result.</p>
+              <label class="field-label" for="compressFiles">Choose photos</label><input class="file-control" id="compressFiles" type="file" accept="image/*" multiple />
+              <div class="two-col tool-fields"><div><label class="field-label" for="compressFormat">Compressed format</label><select class="select-control" id="compressFormat"><option value="image/webp">WebP · smaller files</option><option value="image/jpeg">JPG · broad support</option></select></div><div><label class="field-label" for="compressMax">Maximum long edge</label><select class="select-control" id="compressMax"><option value="0">Keep original dimensions</option><option value="2560">2560 px</option><option value="1920">1920 px</option><option value="1280">1280 px</option><option value="800">800 px</option></select></div></div>
+              <div class="slider-block"><div class="slider-head"><label for="compressQuality">Compression quality</label><span class="slider-value" id="compressQualityValue">78%</span></div><input id="compressQuality" type="range" min="10" max="100" value="78" /></div>
+              <button class="primary-button tool-run" id="runCompress" type="button">Compress selected photos</button>
+              <div class="tool-status" id="compressStatus" aria-live="polite">Choose one or more images to begin.</div><div class="result-list" id="compressResults"></div>
+            </div>
+          </section>
+
+          <section class="tool-panel panel hidden" id="convertTool">
+            <div class="panel-section">
+              <div class="section-heading"><div><div class="section-title">Image format converter</div><div class="section-note">CONVERT SINGLE OR MULTIPLE IMAGES</div></div><span class="tool-icon">⇄</span></div>
+              <p class="tool-description">Convert images between JPG, PNG and WebP. PNG preserves transparency; JPG uses a solid white background where transparency exists.</p>
+              <label class="field-label" for="convertFiles">Choose photos</label><input class="file-control" id="convertFiles" type="file" accept="image/*" multiple />
+              <div class="two-col tool-fields"><div><label class="field-label" for="convertFormat">Convert to</label><select class="select-control" id="convertFormat"><option value="image/webp">WebP</option><option value="image/jpeg">JPG</option><option value="image/png">PNG</option></select></div><div><label class="field-label" for="convertQuality">Quality <span id="convertQualityValue">92%</span></label><input id="convertQuality" type="range" min="10" max="100" value="92" /></div></div>
+              <button class="primary-button tool-run" id="runConvert" type="button">Convert selected photos</button>
+              <div class="tool-status" id="convertStatus" aria-live="polite">Choose one or more images to begin.</div><div class="result-list" id="convertResults"></div>
+            </div>
+          </section>
+
+          <section class="tool-panel panel hidden" id="passportTool">
+            <div class="panel-section">
+              <div class="section-heading"><div><div class="section-title">Passport photo maker</div><div class="section-note">PRINT-SIZE ID PHOTO</div></div><span class="tool-icon">▣</span></div>
+              <p class="tool-description">Create a centered, white-background ID photo at a selected print size. Check the official photo rules for your application before submitting.</p>
+              <label class="field-label" for="passportFile">Choose portrait photo</label><input class="file-control" id="passportFile" type="file" accept="image/*" />
+              <div class="two-col tool-fields"><div><label class="field-label" for="passportPreset">Photo size</label><select class="select-control" id="passportPreset"><option value="35x45">India · 35 × 45 mm</option><option value="50.8x50.8">US · 2 × 2 inches</option><option value="custom">Custom dimensions</option></select></div><div><label class="field-label" for="passportDpi">Print resolution</label><select class="select-control" id="passportDpi"><option value="300">300 DPI</option><option value="600">600 DPI</option></select></div></div>
+              <div class="two-col tool-fields" id="passportCustomDims" hidden><div><label class="field-label" for="passportWidthMm">Width (mm)</label><input class="text-control" id="passportWidthMm" type="number" min="10" max="100" value="35" /></div><div><label class="field-label" for="passportHeightMm">Height (mm)</label><input class="text-control" id="passportHeightMm" type="number" min="10" max="100" value="45" /></div></div>
+              <div class="passport-preview-wrap"><canvas id="passportCanvas" width="413" height="531"></canvas><div class="passport-meta" id="passportMeta">35 × 45 mm · 413 × 531 px · 300 DPI</div></div>
+              <button class="primary-button tool-run" id="downloadPassport" type="button" disabled>Download passport photo</button>
+              <div class="tool-status" id="passportStatus">Upload a portrait photo to create your print-size image.</div>
+            </div>
+          </section>
+
+          <section class="tool-panel panel hidden" id="backgroundTool">
+            <div class="panel-section">
+              <div class="section-heading"><div><div class="section-title">Background remover</div><div class="section-note">SOLID-BACKGROUND COLOR KEY</div></div><span class="tool-icon">◐</span></div>
+              <p class="tool-description">Remove a plain, evenly colored background locally by sampling its color. This is a chroma-key tool, not AI subject detection; busy backgrounds may leave artifacts.</p>
+              <label class="field-label" for="backgroundFile">Choose photo</label><input class="file-control" id="backgroundFile" type="file" accept="image/*" />
+              <div class="background-preview-wrap"><canvas id="backgroundCanvas"></canvas></div>
+              <div class="two-col tool-fields"><div><label class="field-label" for="bgTolerance">Color tolerance <span id="bgToleranceValue">42</span></label><input id="bgTolerance" type="range" min="5" max="180" value="42" /></div><div><label class="field-label" for="bgFeather">Edge softness <span id="bgFeatherValue">35</span></label><input id="bgFeather" type="range" min="0" max="120" value="35" /></div></div>
+              <div class="action-row tool-fields"><button class="secondary-button" id="bgAutoSample" type="button" disabled>Auto sample corners</button><button class="secondary-button" id="bgPickSample" type="button" disabled>Pick color on image</button></div>
+              <div class="sample-indicator" id="bgSampleIndicator">No background color selected</div>
+              <div class="action-row tool-fields"><button class="secondary-button" id="bgReset" type="button" disabled>Reset preview</button><button class="primary-button" id="bgRemove" type="button" disabled>Remove background</button></div>
+              <button class="primary-button tool-run" id="bgDownload" type="button" disabled>Download transparent PNG</button>
+              <div class="tool-status" id="bgStatus">Upload a photo with a plain background to begin.</div>
+            </div>
+          </section>
+
+          <section class="tool-panel panel hidden" id="watermarkTool">
+            <div class="panel-section">
+              <div class="section-heading"><div><div class="section-title">Watermark editor</div><div class="section-note">ADD YOUR BRAND OR SIGNATURE</div></div><span class="tool-icon">✎</span></div>
+              <label class="field-label" for="watermarkFile">Choose photo</label><input class="file-control" id="watermarkFile" type="file" accept="image/*" />
+              <label class="field-label tool-fields" for="watermarkText">Watermark text</label><input class="text-control" id="watermarkText" type="text" maxlength="100" value="© Your Brand" />
+              <div class="two-col tool-fields"><div><label class="field-label" for="watermarkPosition">Position</label><select class="select-control" id="watermarkPosition"><option value="bottom-right">Bottom right</option><option value="bottom-left">Bottom left</option><option value="top-right">Top right</option><option value="top-left">Top left</option><option value="center">Center</option><option value="tile">Repeat / tile</option></select></div><div><label class="field-label" for="watermarkColor">Text color</label><input id="watermarkColor" type="color" value="#ffffff" style="width:100%;height:38px;border:1px solid var(--line);border-radius:9px;background:#101520;padding:4px" /></div></div>
+              <div class="slider-block"><div class="slider-head"><label for="watermarkOpacity">Opacity</label><span class="slider-value" id="watermarkOpacityValue">60%</span></div><input id="watermarkOpacity" type="range" min="5" max="100" value="60" /></div>
+              <div class="slider-block"><div class="slider-head"><label for="watermarkSize">Text size</label><span class="slider-value" id="watermarkSizeValue">4%</span></div><input id="watermarkSize" type="range" min="1" max="15" value="4" /></div>
+              <label class="field-label tool-fields" for="watermarkLogo">Optional logo image (PNG works best)</label><input class="file-control" id="watermarkLogo" type="file" accept="image/*" />
+              <div class="background-preview-wrap"><canvas id="watermarkCanvas"></canvas></div>
+              <button class="primary-button tool-run" id="downloadWatermark" type="button" disabled>Download watermarked image</button>
+              <div class="tool-status" id="watermarkStatus">Upload an image to preview your watermark.</div>
+            </div>
+          </section>
+          <div class="ad-slot ad-inline" aria-label="Advertisement"><span class="ad-label">ADVERTISEMENT</span><strong>Ad space reserved</strong><small>AdSense placement · configure after publisher approval</small></div>
+        </div>
+      </div>
+    </section>
+    <section class="guides-section" aria-labelledby="guidesTitle">
+      <div class="eyebrow">PHOTO WORKFLOW GUIDE</div>
+      <h2 id="guidesTitle">Make images work wherever you need them.</h2>
+      <p class="subtitle">A few practical notes to help you choose the right image size, file type and editing tool.</p>
+      <div class="guide-grid">
+        <article class="guide-card"><h3>Choose the right dimensions</h3><p>Start with the size required by the destination. Square images are useful for profile pictures and square social posts; vertical 9:16 layouts are commonly used for full-screen stories; and 16:9 is a familiar landscape video and presentation shape. Use the aspect-ratio lock to avoid accidental stretching. If you need a different shape, crop first and resize second.</p></article>
+        <article class="guide-card"><h3>Crop without distortion</h3><p>Use the live crop frame to select the important part of a photo. Drag inside the frame to reposition it, then use the handles to change its size. A fixed ratio keeps the crop shape consistent. Cropping removes pixels outside the selected area; it does not add detail to a small or blurry source image.</p></article>
+        <article class="guide-card"><h3>JPG, PNG or WebP?</h3><p>JPG is widely compatible and works well for photographs, but it does not preserve transparent areas. PNG is useful for graphics, screenshots and transparency. WebP can provide a compact file with good visual quality, although compatibility depends on the receiving app or workflow. Keep an original copy before converting.</p></article>
+        <article class="guide-card"><h3>Compress for faster sharing</h3><p>For JPG and WebP, lower quality settings usually reduce file size but can introduce visible artifacts around fine detail and text. Start around 75–85% for everyday photographs, compare the preview or output, and increase quality when small details matter. Resizing the long edge can reduce file size further.</p></article>
+        <article class="guide-card"><h3>Prepare a print-size ID photo</h3><p>Select the required physical dimensions and print resolution, then check the exported pixel size. The passport tool uses a centered crop and a white background. It does not detect the face, adjust eye position, validate expression or certify compliance; official photo rules vary by country and application, so review them before using the output.</p></article>
+        <article class="guide-card"><h3>When background removal works best</h3><p>The background remover samples a color and makes similar pixels transparent. It is most effective when the background is plain and evenly lit and contrasts strongly with the subject. Hair, shadows, reflections and objects sharing the sampled color may need manual retouching in a more advanced editor.</p></article>
+      </div>
+      <details class="guide-faq"><summary>Are my photos uploaded to PixelCraft Studio?</summary><p>The editor processes selected image files in your browser and does not send photos to a PixelCraft image-processing server. Your website host may still keep ordinary server access logs.</p></details>
+      <details class="guide-faq"><summary>Can I process multiple photos together?</summary><p>Yes. Batch resize, bulk compression and format conversion accept multiple files. Outputs are provided as individual download links so you can choose which processed files to save.</p></details>
+      <details class="guide-faq"><summary>Does the background remover use AI?</summary><p>No. It uses solid-color sampling and chroma-key processing in the browser. It is not an AI model that recognizes people or separates complex objects from their surroundings.</p></details>
+    </section>
+    <div class="ad-slot ad-footer" aria-label="Advertisement"><span class="ad-label">ADVERTISEMENT</span><strong>Ad space reserved</strong><small>Connect your own approved ad account to monetize this space.</small></div>
+  </main>
+  <footer>PixelCraft Studio · Free browser-based image tools · <a href="privacy.html">Privacy Policy</a> · <a href="terms.html">Terms &amp; Conditions</a> · <a href="disclaimer.html">Disclaimer</a> · <a href="about.html">About</a> · <a href="contact.html">Contact Us</a> · <a href="guides.html">Guides</a> · <button class="footer-cookie-button" id="openCookieSettingsFooter" type="button">Cookie settings</button></footer>
+</div>
+<input id="fileInput" type="file" accept="image/png,image/jpeg,image/webp,image/gif" multiple />
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(() => {
+  'use strict';
+  const $ = (id) => document.getElementById(id);
+  const fileInput = $('fileInput');
+  const canvas = $('previewCanvas');
+  const ctx = canvas.getContext('2d');
+  const state = {
+    image: null, originalImage: null, fileName: '', originalWidth: 0, originalHeight: 0,
+    rotation: 0, flipH: false, flipV: false, locked: true,
+    ratio: 1, filters: { brightness: 100, contrast: 100, saturate: 100, grayscale: 0, sepia: 0 },
+    blur: 0, sharpen: 0, vignette: 0, effect: 'normal', skewX: 0, skewY: 0, overlays: [], frame: { style: 'none', color: '#a78bfa', radius: 0 },
+    renderQueued: false, cropActive: false, cropRect: { x: 0.1, y: 0.1, w: 0.8, h: 0.8 }, cropDrag: null,
+    watermark: { text: '', color: '#ffffff', opacity: 65, size: 4, position: 'bottom-right' }
+  };
+  const presets = Array.from(document.querySelectorAll('.preset'));
+
+  function showToast(message) {
+    const toast = $('toast'); toast.textContent = message; toast.classList.add('show');
+    clearTimeout(showToast.timer); showToast.timer = setTimeout(() => toast.classList.remove('show'), 2600);
+  }
+  function openPicker() { fileInput.click(); }
+  $('topUpload').addEventListener('click', openPicker);
+  $('mainUpload').addEventListener('click', openPicker);
+  $('changePhoto').addEventListener('click', openPicker);
+
+  function formatBytes(bytes) {
+    if (bytes < 1024) return bytes + ' B';
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+    return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
+  }
+  function loadFile(file) {
+    if (!file) return;
+    if (!file.type.startsWith('image/')) { showToast('Please choose an image file.'); return; }
+    if (file.size > 40 * 1024 * 1024) { showToast('That file is larger than 40 MB. Choose a smaller image.'); return; }
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => {
+      if (state.objectUrl) URL.revokeObjectURL(state.objectUrl);
+      state.objectUrl = url;
+      state.image = img; state.originalImage = img; state.fileName = file.name; state.originalWidth = img.naturalWidth; state.originalHeight = img.naturalHeight;
+      state.rotation = 0; state.flipH = false; state.flipV = false; state.blur=0; state.sharpen=0; state.vignette=0; state.effect='normal'; state.skewX=state.skewY=0; state.overlays=[]; state.frame={style:'none',color:'#a78bfa',radius:0};
+      state.ratio = img.naturalWidth / img.naturalHeight; state.locked = true;
+      $('widthInput').value = img.naturalWidth; $('heightInput').value = img.naturalHeight;
+      $('emptyState').classList.add('hidden'); canvas.style.display = 'block'; $('stageHint').classList.remove('hidden');
+      $('fileName').textContent = file.name; $('fileDetails').textContent = `${img.naturalWidth} × ${img.naturalHeight} px · ${formatBytes(file.size)}`;
+      $('downloadButton').disabled = false; $('changePhoto').disabled = false;
+      setCropMode(false, { silent: true });
+      resetAdjustments(false); updateLockButton(); updateDimensionsInfo(); clearPresetActive(); render();
+      $('statusText').textContent = 'Image loaded';
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); showToast('This image could not be opened. Try another file.'); };
+    img.src = url;
+  }
+  fileInput.addEventListener('change', (e) => {
+    const files = Array.from(e.target.files || []);
+    if (files.length === 1) loadFile(files[0]);
+    // Multiple selections are routed to the batch workspace by PixelCraft enhancements.
+    fileInput.value = '';
+  });
+
+  const dropZone = $('dropZone');
+  ['dragenter','dragover'].forEach(type => dropZone.addEventListener(type, e => { e.preventDefault(); dropZone.classList.add('dragging'); }));
+  ['dragleave','drop'].forEach(type => dropZone.addEventListener(type, e => { e.preventDefault(); dropZone.classList.remove('dragging'); }));
+  dropZone.addEventListener('drop', e => {
+    const files = Array.from(e.dataTransfer?.files || []);
+    if (files.length === 1) loadFile(files[0]);
+    // Multiple dropped photos are routed to the batch workspace by PixelCraft enhancements.
+  });
+  document.addEventListener('dragover', e => e.preventDefault());
+  document.addEventListener('drop', e => e.preventDefault());
+
+  function dimensions() {
+    return { w: Math.max(1, Math.round(Number($('widthInput').value) || 1)), h: Math.max(1, Math.round(Number($('heightInput').value) || 1)) };
+  }
+
+  const cropOverlay = $('cropOverlay');
+  const cropFrame = $('cropFrame');
+  const cropRatioSelect = $('cropRatio');
+  function cropAspect() {
+    const value = cropRatioSelect.value;
+    if (value === 'free') return null;
+    if (value === 'original') return canvas.width / canvas.height;
+    return Number(value);
+  }
+  function cropBounds() {
+    const rect = cropOverlay.getBoundingClientRect();
+    return { width: rect.width, height: rect.height };
+  }
+  function setCropRect(rect) {
+    const minW = 0.02, minH = 0.02;
+    const w = Math.min(1, Math.max(minW, rect.w));
+    const h = Math.min(1, Math.max(minH, rect.h));
+    const x = Math.min(1 - w, Math.max(0, rect.x));
+    const y = Math.min(1 - h, Math.max(0, rect.y));
+    state.cropRect = { x, y, w, h };
+    cropFrame.style.left = `${x * 100}%`;
+    cropFrame.style.top = `${y * 100}%`;
+    cropFrame.style.width = `${w * 100}%`;
+    cropFrame.style.height = `${h * 100}%`;
+    updateCropReadout();
+  }
+  function updateCropReadout() {
+    if (!state.image || !state.cropActive) { $('cropReadout').textContent = 'Crop area: —'; return; }
+    $('cropReadout').textContent = `Live selection: ${Math.max(1, Math.round(state.cropRect.w * canvas.width))} × ${Math.max(1, Math.round(state.cropRect.h * canvas.height))} px`;
+  }
+  function cropOverlayPosition() {
+    if (!state.image || !state.cropActive) return;
+    const stageRect = dropZone.getBoundingClientRect();
+    const canvasRect = canvas.getBoundingClientRect();
+    cropOverlay.style.left = `${canvasRect.left - stageRect.left}px`;
+    cropOverlay.style.top = `${canvasRect.top - stageRect.top}px`;
+    cropOverlay.style.width = `${canvasRect.width}px`;
+    cropOverlay.style.height = `${canvasRect.height}px`;
+    updateCropReadout();
+  }
+  function initialCropRect() {
+    const aspect = cropAspect();
+    if (!aspect) return { x: .1, y: .1, w: .8, h: .8 };
+    const canvasAspect = canvas.width / canvas.height;
+    let w = .82, h = w * canvasAspect / aspect;
+    if (h > .82) { h = .82; w = h * aspect / canvasAspect; }
+    return { x: (1 - w) / 2, y: (1 - h) / 2, w, h };
+  }
+  function fitCropToRatio() {
+    if (!state.image || !state.cropActive) return;
+    const aspect = cropAspect();
+    if (!aspect) return;
+    const current = state.cropRect;
+    const canvasAspect = canvas.width / canvas.height;
+    let w = current.w, h = w * canvasAspect / aspect;
+    if (h > current.h) { h = current.h; w = h * aspect / canvasAspect; }
+    const cx = current.x + current.w / 2, cy = current.y + current.h / 2;
+    setCropRect({ x: cx - w/2, y: cy - h/2, w, h });
+  }
+  function setCropMode(active, options = {}) {
+    const { resetSelection = true, silent = false } = options;
+    if (!state.image) {
+      if (active) showToast('Upload a photo before cropping.');
+      return false;
+    }
+    state.cropActive = Boolean(active);
+    cropOverlay.classList.toggle('active', state.cropActive);
+    $('applyCrop').disabled = !state.cropActive;
+    $('cancelCrop').disabled = !state.cropActive;
+    $('cropRatio').disabled = !state.image;
+    $('stageHint').classList.toggle('hidden', state.cropActive);
+    const cropButton = $('pcCropButton');
+    if (cropButton) {
+      cropButton.disabled = !state.image;
+      cropButton.classList.toggle('active', state.cropActive);
+      cropButton.setAttribute('aria-pressed', String(state.cropActive));
+      cropButton.title = state.cropActive ? 'Crop selection is active' : 'Show crop selection';
+    }
+    if (state.cropActive) {
+      if (resetSelection) state.cropRect = initialCropRect();
+      requestAnimationFrame(() => { cropOverlayPosition(); setCropRect(state.cropRect); });
+      if (!silent) $('statusText').textContent = 'Adjust the crop frame on your photo';
+    } else {
+      state.cropDrag = null;
+      $('cropReadout').textContent = 'Crop area: —';
+      if (!silent) $('statusText').textContent = 'Crop selection closed';
+    }
+    return state.cropActive;
+  }
+  $('cancelCrop').addEventListener('click', () => setCropMode(false));
+  cropRatioSelect.addEventListener('change', fitCropToRatio);
+  window.addEventListener('resize', cropOverlayPosition);
+
+  function pointerCropStart(event) {
+    if (!state.cropActive) return;
+    event.preventDefault();
+    const bounds = cropBounds();
+    if (!bounds.width || !bounds.height) return;
+    const handle = event.target.closest('[data-handle]');
+    state.cropDrag = {
+      mode: handle ? handle.dataset.handle : 'move',
+      startX: event.clientX, startY: event.clientY,
+      rect: { ...state.cropRect }, bounds
+    };
+    cropFrame.setPointerCapture?.(event.pointerId);
+  }
+  function pointerCropMove(event) {
+    if (!state.cropDrag || !state.cropActive) return;
+    const drag = state.cropDrag;
+    const dx = (event.clientX - drag.startX) / drag.bounds.width;
+    const dy = (event.clientY - drag.startY) / drag.bounds.height;
+    let { x, y, w, h } = drag.rect;
+    const mode = drag.mode;
+    if (mode === 'move') {
+      setCropRect({ x: x + dx, y: y + dy, w, h });
+      return;
+    }
+    const west = mode.includes('w'), east = mode.includes('e');
+    const north = mode.includes('n'), south = mode.includes('s');
+    const right = x + w, bottom = y + h;
+    const aspect = cropAspect();
+    let nx = x, ny = y, nw = w, nh = h;
+    if (!aspect) {
+      const minW = Math.min(.98, 28 / drag.bounds.width);
+      const minH = Math.min(.98, 28 / drag.bounds.height);
+      if (west) { nx = Math.max(0, Math.min(right - minW, x + dx)); nw = right - nx; }
+      if (east) nw = Math.max(minW, Math.min(1 - x, w + dx));
+      if (north) { ny = Math.max(0, Math.min(bottom - minH, y + dy)); nh = bottom - ny; }
+      if (south) nh = Math.max(minH, Math.min(1 - y, h + dy));
+    } else {
+      const bw = drag.bounds.width, bh = drag.bounds.height;
+      const anchorX = west ? right : east ? x : x + w / 2;
+      const anchorY = north ? bottom : south ? y : y + h / 2;
+      const maxWidthX = (west ? anchorX : east ? 1 - anchorX : 2 * Math.min(anchorX, 1 - anchorX)) * bw;
+      const maxHeightY = (north ? anchorY : south ? 1 - anchorY : 2 * Math.min(anchorY, 1 - anchorY)) * bh;
+      const maxW = Math.max(1, Math.min(maxWidthX, maxHeightY * aspect));
+      const pixelW = w * bw, pixelH = h * bh;
+      const deltaW = (east ? 1 : -1) * dx * bw;
+      const deltaHAsWidth = (south ? 1 : -1) * dy * bh * aspect;
+      let targetW;
+      if ((west || east) && (north || south)) {
+        targetW = Math.abs(deltaW) >= Math.abs(deltaHAsWidth) ? pixelW + deltaW : pixelW + deltaHAsWidth;
+      } else if (west || east) {
+        targetW = pixelW + deltaW;
+      } else {
+        targetW = pixelW + deltaHAsWidth;
+      }
+      const minW = Math.min(maxW, Math.max(24, Math.min(bw, bh) * .04));
+      targetW = Math.max(minW, Math.min(maxW, targetW));
+      nw = targetW / bw;
+      nh = (targetW / aspect) / bh;
+      nx = west ? anchorX - nw : east ? anchorX : anchorX - nw / 2;
+      ny = north ? anchorY - nh : south ? anchorY : anchorY - nh / 2;
+    }
+    setCropRect({ x: nx, y: ny, w: nw, h: nh });
+  }
+  function pointerCropEnd() { state.cropDrag = null; }
+  cropFrame.addEventListener('pointerdown', pointerCropStart);
+  document.addEventListener('pointermove', pointerCropMove);
+  document.addEventListener('pointerup', pointerCropEnd);
+  document.addEventListener('pointercancel', pointerCropEnd);
+
+  $('applyCrop').addEventListener('click', () => {
+    if (!state.image || !state.cropActive) return;
+    const r = state.cropRect;
+    const sx = Math.max(0, Math.min(canvas.width - 1, Math.round(r.x * canvas.width)));
+    const sy = Math.max(0, Math.min(canvas.height - 1, Math.round(r.y * canvas.height)));
+    const sw = Math.max(1, Math.min(canvas.width - sx, Math.round(r.w * canvas.width)));
+    const sh = Math.max(1, Math.min(canvas.height - sy, Math.round(r.h * canvas.height)));
+    const cropped = document.createElement('canvas');
+    const basePreview = document.createElement('canvas');
+    renderTo(basePreview, false, false);
+    cropped.width = sw; cropped.height = sh;
+    cropped.getContext('2d').drawImage(basePreview, sx, sy, sw, sh, 0, 0, sw, sh);
+    const img = new Image();
+    img.onload = () => {
+      state.image = img; state.originalWidth = sw; state.originalHeight = sh;
+      state.rotation = 0; state.flipH = false; state.flipV = false;
+      state.ratio = sw / sh; state.locked = true;
+      $('widthInput').value = sw; $('heightInput').value = sh;
+      $('fitMode').value = 'stretch';
+      resetAdjustments(false); state.blur=0; state.sharpen=0; state.vignette=0; state.effect='normal'; state.skewX=0; state.skewY=0; ['pcBlur','pcSharpen','pcVignette','pcSkewX','pcSkewY'].forEach(id=>{if($(id))$(id).value=0;}); if($('pcEffects'))$('pcEffects').querySelectorAll('.preset').forEach(b=>b.classList.toggle('active',b.dataset.effect==='normal')); updateLockButton(); clearPresetActive(); updateDimensionsInfo();
+      $('fileDetails').textContent = `${sw} × ${sh} px · cropped image`;
+      setCropMode(false); render();
+      $('statusText').textContent = 'Crop applied';
+      showToast(`Crop applied · ${sw} × ${sh} px`);
+    };
+    img.onerror = () => showToast('Could not apply this crop. Please try again.');
+    img.src = cropped.toDataURL('image/png');
+  });
+  function updateDimensionsInfo() {
+    const {w,h} = dimensions();
+    $('ratioText').textContent = `Aspect ratio ${ (w / h).toFixed(3) } : 1`;
+    $('pixelCount').textContent = `${(w*h/1000000).toFixed(2)} MP`;
+    $('canvasDimensions').textContent = `${w} × ${h} px`;
+    if (state.cropActive) requestAnimationFrame(cropOverlayPosition);
+  }
+  function scheduleRender() {
+    updateDimensionsInfo();
+    if (!state.image) return;
+    if (state.renderQueued) return;
+    state.renderQueued = true;
+    requestAnimationFrame(() => { state.renderQueued = false; render(); });
+  }
+  function clearPresetActive() { presets.forEach(p => p.classList.remove('active')); }
+  $('widthInput').addEventListener('input', () => {
+    const w = Math.min(12000, Math.max(1, Math.round(Number($('widthInput').value) || 1)));
+    $('widthInput').value = w;
+    if (state.locked) $('heightInput').value = Math.max(1, Math.round(w / state.ratio));
+    clearPresetActive(); scheduleRender();
+  });
+  $('heightInput').addEventListener('input', () => {
+    const h = Math.min(12000, Math.max(1, Math.round(Number($('heightInput').value) || 1)));
+    $('heightInput').value = h;
+    if (state.locked) $('widthInput').value = Math.max(1, Math.round(h * state.ratio));
+    clearPresetActive(); scheduleRender();
+  });
+  function updateLockButton() {
+    $('lockButton').style.color = state.locked ? 'var(--accent)' : 'var(--muted)';
+    $('lockButton').title = state.locked ? 'Aspect ratio locked' : 'Aspect ratio unlocked';
+    $('lockButton').setAttribute('aria-label', state.locked ? 'Unlock aspect ratio' : 'Lock aspect ratio');
+    $('lockIcon').innerHTML = state.locked
+      ? '<rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/>'
+      : '<rect x="4" y="10" width="16" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 7.5-1.8"/>';
+  }
+  $('lockButton').addEventListener('click', () => {
+    state.locked = !state.locked;
+    const {w,h} = dimensions(); state.ratio = w / h;
+    updateLockButton();
+  });
+  presets.forEach(p => p.addEventListener('click', () => {
+    $('widthInput').value = p.dataset.w; $('heightInput').value = p.dataset.h;
+    state.ratio = Number(p.dataset.w) / Number(p.dataset.h); state.locked = true; updateLockButton();
+    presets.forEach(x => x.classList.toggle('active', x === p)); scheduleRender();
+  }));
+  ['fitMode','backgroundMode'].forEach(id => $(id).addEventListener('change', scheduleRender));
+
+  function rotatedSource() {
+    const img = state.image;
+    const rad = state.rotation * Math.PI / 180;
+    const sw = Math.max(1, Math.ceil(Math.abs(img.naturalWidth * Math.cos(rad)) + Math.abs(img.naturalHeight * Math.sin(rad))));
+    const sh = Math.max(1, Math.ceil(Math.abs(img.naturalHeight * Math.cos(rad)) + Math.abs(img.naturalWidth * Math.sin(rad))));
+    const off = document.createElement('canvas'); off.width = sw; off.height = sh;
+    const c = off.getContext('2d');
+    c.translate(sw/2, sh/2);
+    c.rotate(rad);
+    c.scale(state.flipH ? -1 : 1, state.flipV ? -1 : 1);
+    c.drawImage(img, -img.naturalWidth/2, -img.naturalHeight/2);
+    return off;
+  }
+  function renderTo(targetCanvas, forExport=false, includeWatermark=true) {
+    if (!state.image) return;
+    const {w,h} = dimensions();
+    if (w > 12000 || h > 12000 || w*h > 80_000_000) throw new Error('Choose dimensions below 80 megapixels for a reliable export.');
+    targetCanvas.width = w; targetCanvas.height = h;
+    const c = targetCanvas.getContext('2d');
+    c.clearRect(0,0,w,h);
+    const bg = $('backgroundMode').value;
+    if (forExport && (bg !== 'transparent' || $('formatSelect')?.value === 'image/jpeg')) { c.fillStyle = bg === 'black' ? '#000000' : '#ffffff'; c.fillRect(0,0,w,h); }
+    const source = rotatedSource();
+    const sw = source.width, sh = source.height;
+    const mode = $('fitMode').value;
+    c.save();
+    if (state.frame?.style === 'rounded' && Number(state.frame.radius||0) > 0) { c.beginPath(); c.roundRect(0, 0, w, h, Math.min(w,h) * Number(state.frame.radius) / 250); c.clip(); }
+    c.filter = `brightness(${state.filters.brightness}%) contrast(${state.filters.contrast}%) saturate(${state.filters.saturate}%) grayscale(${state.filters.grayscale}%) sepia(${state.filters.sepia}%) blur(${state.blur || 0}px)`;
+    if (state.skewX || state.skewY) { c.translate(w/2, h/2); c.transform(1, (state.skewY||0)/100, (state.skewX||0)/100, 1, 0, 0); c.translate(-w/2, -h/2); }
+    if (mode === 'stretch') {
+      c.drawImage(source, 0, 0, w, h);
+    } else {
+      const scale = mode === 'cover' ? Math.max(w/sw, h/sh) : Math.min(w/sw, h/sh);
+      const dw = sw * scale, dh = sh * scale;
+      c.drawImage(source, (w-dw)/2, (h-dh)/2, dw, dh);
+    }
+    c.restore();
+    if (state.sharpen && window.PixelCraftSharpen) window.PixelCraftSharpen(c, w, h, state.sharpen);
+    if (state.effect && state.effect !== 'normal' && window.PixelCraftApplyEffect) window.PixelCraftApplyEffect(c, w, h, state.effect);
+    if (state.vignette && state.vignette > 0 && window.PixelCraftVignette) window.PixelCraftVignette(c, w, h, state.vignette);
+    if (includeWatermark) drawEditorWatermark(c, w, h);
+    if (includeWatermark && window.PixelCraftDrawExtras) window.PixelCraftDrawExtras(c, w, h, state);
+  }
+  function drawEditorWatermark(c, w, h) {
+    const text = ($('editorWmText')?.value || '').trim();
+    if (!text) return;
+    const opacity = Number($('editorWmOpacity')?.value || 65) / 100;
+    const size = Math.max(10, w * Number($('editorWmSize')?.value || 4) / 100);
+    const position = $('editorWmPosition')?.value || 'bottom-right';
+    const color = $('editorWmColor')?.value || '#ffffff';
+    c.save(); c.globalAlpha = opacity; c.fillStyle = color; c.textBaseline = 'middle';
+    const family = $('textFont')?.value || 'Arial';
+    const stroke = $('textStroke')?.value || '0';
+    const strokeColor = $('textStrokeColor')?.value || '#111827';
+    const shadow = $('textShadow')?.checked ?? true;
+    c.font = `700 ${size}px ${family}`;
+    const margin = Math.max(12, size * .7);
+    if (position === 'tile') {
+      c.textAlign = 'center';
+      for (let y=size; y<h+size; y+=size*3) for (let x=size; x<w+size; x+=size*5) c.fillText(text,x,y);
+    } else {
+      const align = position.endsWith('left') ? 'left' : position.endsWith('right') ? 'right' : 'center';
+      c.textAlign = align;
+      const x = position.endsWith('left') ? margin : position.endsWith('right') ? w-margin : w/2;
+      const y = position.startsWith('top') ? margin+size/2 : position.startsWith('bottom') ? h-margin-size/2 : h/2;
+      c.shadowColor = shadow ? 'rgba(0,0,0,.55)' : 'transparent'; c.shadowBlur = shadow ? Math.max(2,size*.12) : 0; if (Number(stroke)>0) { c.lineWidth=Number(stroke)*Math.max(1,w/1000); c.strokeStyle=strokeColor; c.strokeText(text,x,y,w-margin*2); } c.fillText(text,x,y,w-margin*2);
+    }
+    c.restore();
+  }
+  function render() {
+    if (!state.image) return;
+    try {
+      renderTo(canvas, false);
+      if (state.cropActive) requestAnimationFrame(cropOverlayPosition);
+      $('statusText').textContent = 'Preview updated';
+    } catch (err) {
+      $('statusText').textContent = 'Dimensions need attention';
+      showToast(err.message);
+    }
+  }
+  $('fitMode').addEventListener('change', scheduleRender);
+  $('backgroundMode').addEventListener('change', scheduleRender);
+
+  function rotate(degrees) {
+    if (!state.image) return;
+    state.rotation = (state.rotation + degrees + 360) % 360;
+    if (Math.abs(degrees) === 90) {
+      const {w,h} = dimensions();
+      $('widthInput').value = h; $('heightInput').value = w;
+      state.ratio = Number($('widthInput').value) / Number($('heightInput').value);
+    }
+    clearPresetActive(); updateDimensionsInfo(); render();
+  }
+  $('rotateLeft').addEventListener('click', () => rotate(-90));
+  $('rotateRight').addEventListener('click', () => rotate(90));
+  $('flipH').addEventListener('click', () => { if (!state.image) return; state.flipH = !state.flipH; render(); });
+  $('flipV').addEventListener('click', () => { if (!state.image) return; state.flipV = !state.flipV; render(); });
+
+  function resetAdjustments(doRender=true) {
+    Object.keys(state.filters).forEach(k => state.filters[k] = ({brightness:100,contrast:100,saturate:100,grayscale:0,sepia:0})[k]);
+    document.querySelectorAll('[data-filter]').forEach(input => {
+      input.value = state.filters[input.dataset.filter];
+      $(input.id + 'Value').textContent = input.value + '%';
+    });
+    if (doRender) render();
+  }
+  document.querySelectorAll('[data-filter]').forEach(input => input.addEventListener('input', () => {
+    state.filters[input.dataset.filter] = Number(input.value);
+    $(input.id + 'Value').textContent = input.value + '%'; render();
+  }));
+  $('resetAdjustments').addEventListener('click', () => resetAdjustments(true));
+  $('quality').addEventListener('input', () => $('qualityValue').textContent = $('quality').value + '%');
+  ['editorWmText','editorWmPosition','editorWmColor','editorWmOpacity','editorWmSize'].forEach(id => {
+    $(id).addEventListener('input', () => {
+      if (id === 'editorWmOpacity') $('editorWmOpacityValue').textContent = $('editorWmOpacity').value + '%';
+      if (id === 'editorWmSize') $('editorWmSizeValue').textContent = $('editorWmSize').value + '%';
+      render();
+    });
+    $(id).addEventListener('change', render);
+  });
+
+  $('downloadButton').addEventListener('click', () => {
+    if (!state.image) return;
+    try {
+      const out = document.createElement('canvas'); renderTo(out, true);
+      const mime = $('formatSelect').value;
+      const quality = Number($('quality').value) / 100;
+      out.toBlob(blob => {
+        if (!blob) { showToast('Export failed. Try a different format or smaller dimensions.'); return; }
+        const ext = mime === 'image/jpeg' ? 'jpg' : mime === 'image/png' ? 'png' : 'webp';
+        const base = state.fileName.replace(/\.[^.]+$/, '') || 'photo';
+        const a = document.createElement('a'); const url = URL.createObjectURL(blob);
+        a.href = url; a.download = `${base}-edited-${dimensions().w}x${dimensions().h}.${ext}`;
+        document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 1200);
+        showToast('Your edited photo has been downloaded.');
+      }, mime, quality);
+    } catch (err) { showToast(err.message || 'Unable to export this image.'); }
+  });
+
+  // Keep the preview crisp while allowing the canvas to scale responsively.
+  $('cropRatio').disabled = true;
+  $('applyCrop').disabled = true;
+  $('cancelCrop').disabled = true;
+  updateDimensionsInfo(); updateLockButton();
+  window.PixelCraftCore = { state, canvas, render, renderTo, resetAdjustments, showToast, dimensions, setCropMode };
+})();
+</script>
+<script>
+(() => {
+  'use strict';
+  const $ = (id) => document.getElementById(id);
+  const activeObjectUrls = new Set();
+  const MAX_FILE_BYTES = 40 * 1024 * 1024;
+  const MAX_FILES = 30;
+  const MAX_OUTPUT_EDGE = 12000;
+  const MAX_OUTPUT_PIXELS = 80000000;
+
+  function toast(message) {
+    const el = $('toast');
+    if (!el) return;
+    el.textContent = message;
+    el.classList.add('show');
+    clearTimeout(toast.timer);
+    toast.timer = setTimeout(() => el.classList.remove('show'), 3000);
+  }
+  function fmtBytes(bytes) {
+    if (bytes < 1024) return `${bytes} B`;
+    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+    return `${(bytes / (1024 * 1024)).toFixed(2)} MB`;
+  }
+  function extForMime(mime) {
+    return mime === 'image/jpeg' ? 'jpg' : mime === 'image/png' ? 'png' : 'webp';
+  }
+  function cleanBase(name) {
+    return (name || 'image').replace(/\.[^.]+$/, '').replace(/[\\/:*?"<>|]+/g, '-').slice(0, 100) || 'image';
+  }
+  async function loadBitmap(file) {
+    if (!file || !file.type || !file.type.startsWith('image/')) throw new Error('Choose a valid image file.');
+    if (file.size > MAX_FILE_BYTES) throw new Error('Each image must be smaller than 40 MB.');
+    if ('createImageBitmap' in window) {
+      try { return await createImageBitmap(file, { imageOrientation: 'from-image' }); }
+      catch (_) { /* Fall back for browsers with partial image-bitmap support. */ }
+    }
+    return new Promise((resolve, reject) => {
+      const url = URL.createObjectURL(file);
+      const img = new Image();
+      img.onload = () => { URL.revokeObjectURL(url); resolve(img); };
+      img.onerror = () => { URL.revokeObjectURL(url); reject(new Error(`Could not read ${file.name}.`)); };
+      img.src = url;
+    });
+  }
+  function sourceSize(source) {
+    return { width: source.width || source.naturalWidth, height: source.height || source.naturalHeight };
+  }
+  function drawFitted(ctx, source, width, height, fit = 'contain', background = null) {
+    const { width: sw, height: sh } = sourceSize(source);
+    ctx.clearRect(0, 0, width, height);
+    if (background) { ctx.fillStyle = background; ctx.fillRect(0, 0, width, height); }
+    if (fit === 'stretch') {
+      ctx.drawImage(source, 0, 0, width, height);
+      return;
+    }
+    const scale = fit === 'cover' ? Math.max(width / sw, height / sh) : Math.min(width / sw, height / sh);
+    const dw = sw * scale, dh = sh * scale;
+    ctx.drawImage(source, (width - dw) / 2, (height - dh) / 2, dw, dh);
+  }
+  function canvasBlob(canvas, mime, quality) {
+    return new Promise((resolve, reject) => {
+      if (canvas.width > MAX_OUTPUT_EDGE || canvas.height > MAX_OUTPUT_EDGE || canvas.width * canvas.height > MAX_OUTPUT_PIXELS) {
+        reject(new Error('Output dimensions exceed the browser safety limit (12,000 px per edge / 80 MP).'));
+        return;
+      }
+      canvas.toBlob(blob => blob ? resolve(blob) : reject(new Error('This format could not be exported by your browser. Try JPG or PNG.')), mime, quality);
+    });
+  }
+  function makeOutputCanvas(source, options = {}) {
+    const { width: sw, height: sh } = sourceSize(source);
+    let w = Math.max(1, Math.round(options.width || sw));
+    let h = Math.max(1, Math.round(options.height || sh));
+    if (options.maxEdge && Math.max(w, h) > options.maxEdge) {
+      const scale = options.maxEdge / Math.max(w, h);
+      w = Math.max(1, Math.round(w * scale)); h = Math.max(1, Math.round(h * scale));
+    }
+    if (w > MAX_OUTPUT_EDGE || h > MAX_OUTPUT_EDGE || w * h > MAX_OUTPUT_PIXELS) throw new Error('Requested dimensions are too large. Choose a smaller size.');
+    const canvas = document.createElement('canvas'); canvas.width = w; canvas.height = h;
+    const ctx = canvas.getContext('2d', { alpha: true });
+    const background = options.mime === 'image/jpeg' ? '#ffffff' : (options.background || null);
+    drawFitted(ctx, source, w, h, options.fit || 'stretch', background);
+    return canvas;
+  }
+  function revokeResultUrls(listId) {
+    const list = $(listId);
+    if (!list) return;
+    list.querySelectorAll('a[data-object-url]').forEach(a => {
+      const url = a.dataset.objectUrl;
+      if (url) { URL.revokeObjectURL(url); activeObjectUrls.delete(url); }
+    });
+    list.innerHTML = '';
+  }
+  function addResult(listId, file, blob, detail) {
+    const list = $(listId);
+    const item = document.createElement('div'); item.className = 'result-item';
+    const info = document.createElement('div'); info.className = 'result-name';
+    const name = document.createElement('strong'); name.textContent = file.name;
+    const sub = document.createElement('span'); sub.className = 'result-detail'; sub.textContent = detail;
+    info.append(name, sub);
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob); activeObjectUrls.add(url);
+    link.href = url; link.download = `${cleanBase(file.name)}-pixelcraft.${extForMime(blob.type)}`;
+    link.textContent = 'Download'; link.dataset.objectUrl = url;
+    item.append(info, link); list.append(item);
+  }
+  function validateFileList(files, statusEl) {
+    if (!files.length) { statusEl.textContent = 'Choose one or more image files first.'; return []; }
+    const selected = Array.from(files).slice(0, MAX_FILES);
+    if (files.length > MAX_FILES) statusEl.textContent = `The first ${MAX_FILES} photos will be processed. For a larger set, split it into batches.`;
+    return selected;
+  }
+  async function runFileBatch({ files, statusId, resultsId, mime, quality, buildOptions, operation }) {
+    const status = $(statusId), selected = validateFileList(files, status);
+    if (!selected.length) return;
+    revokeResultUrls(resultsId);
+    let done = 0, totalBefore = 0, totalAfter = 0, failed = 0;
+    for (const file of selected) {
+      try {
+        if (file.size > MAX_FILE_BYTES) throw new Error('file is over 40 MB');
+        const source = await loadBitmap(file);
+        try {
+          const options = buildOptions(source, file);
+          options.mime = mime;
+          const out = makeOutputCanvas(source, options);
+          const blob = await canvasBlob(out, mime, quality);
+          totalBefore += file.size; totalAfter += blob.size;
+          addResult(resultsId, file, blob, `${fmtBytes(file.size)} → ${fmtBytes(blob.size)} · ${out.width} × ${out.height} px`);
+        } finally { source.close?.(); }
+      } catch (error) {
+        failed++;
+        const item = document.createElement('div'); item.className = 'result-item';
+        const name = document.createElement('div'); name.className = 'result-name';
+        name.textContent = `${file.name} — ${error.message || 'processing failed'}`;
+        item.append(name); $(resultsId).append(item);
+      }
+      done++;
+      status.textContent = `${operation}: ${done}/${selected.length} processed${failed ? ` · ${failed} failed` : ''}…`;
+    }
+    const saved = totalBefore - totalAfter;
+    const percent = totalBefore ? Math.round(saved / totalBefore * 100) : 0;
+    status.textContent = `${operation} complete · ${done - failed} successful${failed ? ` · ${failed} failed` : ''}. ${totalBefore ? `Combined file size: ${fmtBytes(totalBefore)} → ${fmtBytes(totalAfter)} (${saved >= 0 ? `${percent}% smaller` : `${Math.abs(percent)}% larger`}).` : ''} Download each result below.`;
+  }
+
+  // Main view navigation and tool navigation.
+  document.querySelectorAll('.main-tab').forEach(button => button.addEventListener('click', () => {
+    document.querySelectorAll('.main-tab').forEach(b => b.classList.toggle('active', b === button));
+    $('editorView').classList.toggle('hidden', button.dataset.view !== 'editorView');
+    $('toolsView').classList.toggle('hidden', button.dataset.view !== 'toolsView');
+    if (button.dataset.view === 'toolsView' && window.PixelCraftCore?.state?.cropActive) window.PixelCraftCore.setCropMode(false, { silent: true, resetSelection: false });
+    if (button.dataset.view === 'editorView') window.dispatchEvent(new Event('resize'));
+  }));
+  document.querySelectorAll('.tool-nav-button').forEach(button => button.addEventListener('click', () => {
+    document.querySelectorAll('.tool-nav-button').forEach(b => b.classList.toggle('active', b === button));
+    document.querySelectorAll('.tool-panel').forEach(panel => panel.classList.toggle('hidden', panel.id !== button.dataset.tool));
+  }));
+
+  // Batch resize.
+  $('batchResizePreset').addEventListener('change', () => $('batchCustomDims').hidden = $('batchResizePreset').value !== 'custom');
+  $('batchQuality').addEventListener('input', () => $('batchQualityValue').textContent = `${$('batchQuality').value}%`);
+  $('runBatchResize').addEventListener('click', () => {
+    let w, h;
+    if ($('batchResizePreset').value === 'custom') { w = Number($('batchWidth').value); h = Number($('batchHeight').value); }
+    else [w, h] = $('batchResizePreset').value.split('x').map(Number);
+    if (!Number.isInteger(w) || !Number.isInteger(h) || w < 1 || h < 1 || w > MAX_OUTPUT_EDGE || h > MAX_OUTPUT_EDGE || w * h > MAX_OUTPUT_PIXELS) {
+      $('batchResizeStatus').textContent = 'Enter valid dimensions within the 80 megapixel export limit.'; return;
+    }
+    const mime = $('batchFormat').value;
+    runFileBatch({
+      files: $('batchResizeFiles').files, statusId: 'batchResizeStatus', resultsId: 'batchResizeResults',
+      mime, quality: Number($('batchQuality').value) / 100,
+      buildOptions: () => ({ width: w, height: h, fit: $('batchFit').value }), operation: 'Batch resize'
+    });
+  });
+
+  // Bulk compression.
+  $('compressQuality').addEventListener('input', () => $('compressQualityValue').textContent = `${$('compressQuality').value}%`);
+  $('runCompress').addEventListener('click', () => {
+    const mime = $('compressFormat').value;
+    runFileBatch({
+      files: $('compressFiles').files, statusId: 'compressStatus', resultsId: 'compressResults', mime,
+      quality: Number($('compressQuality').value) / 100,
+      buildOptions: source => ({ maxEdge: Number($('compressMax').value) || 0, width: sourceSize(source).width, height: sourceSize(source).height, fit: 'stretch' }),
+      operation: 'Compression'
+    });
+  });
+
+  // Format converter.
+  $('convertQuality').addEventListener('input', () => $('convertQualityValue').textContent = `${$('convertQuality').value}%`);
+  $('runConvert').addEventListener('click', () => {
+    const mime = $('convertFormat').value;
+    runFileBatch({
+      files: $('convertFiles').files, statusId: 'convertStatus', resultsId: 'convertResults', mime,
+      quality: Number($('convertQuality').value) / 100,
+      buildOptions: source => ({ width: sourceSize(source).width, height: sourceSize(source).height, fit: 'stretch' }),
+      operation: 'Conversion'
+    });
+  });
+
+  // Passport photo maker.
+  let passportSource = null;
+  const passportCanvas = $('passportCanvas');
+  function passportDimensions() {
+    let [mmW, mmH] = $('passportPreset').value === 'custom'
+      ? [Number($('passportWidthMm').value), Number($('passportHeightMm').value)]
+      : $('passportPreset').value.split('x').map(Number);
+    const dpi = Number($('passportDpi').value);
+    if (!mmW || !mmH || mmW < 10 || mmH < 10 || mmW > 100 || mmH > 100) throw new Error('Enter photo dimensions between 10 and 100 mm.');
+    const w = Math.round(mmW / 25.4 * dpi), h = Math.round(mmH / 25.4 * dpi);
+    return { mmW, mmH, dpi, w, h };
+  }
+  function renderPassport() {
+    if (!passportSource) return;
+    try {
+      const d = passportDimensions();
+      passportCanvas.width = d.w; passportCanvas.height = d.h;
+      const c = passportCanvas.getContext('2d'); c.fillStyle = '#fff'; c.fillRect(0, 0, d.w, d.h);
+      drawFitted(c, passportSource, d.w, d.h, 'cover', '#fff');
+      $('passportMeta').textContent = `${d.mmW} × ${d.mmH} mm · ${d.w} × ${d.h} px · ${d.dpi} DPI · centered crop`;
+      $('passportStatus').textContent = 'Preview updated. Adjust the source photo if the face is not positioned correctly.';
+      $('downloadPassport').disabled = false;
+    } catch (error) { $('passportStatus').textContent = error.message; $('downloadPassport').disabled = true; }
+  }
+  $('passportFile').addEventListener('change', async () => {
+    const file = $('passportFile').files[0]; if (!file) return;
+    try {
+      passportSource?.close?.(); passportSource = await loadBitmap(file); renderPassport();
+    } catch (error) { $('passportStatus').textContent = error.message; }
+  });
+  $('passportPreset').addEventListener('change', () => {
+    $('passportCustomDims').hidden = $('passportPreset').value !== 'custom'; renderPassport();
+  });
+  ['passportDpi','passportWidthMm','passportHeightMm'].forEach(id => $(id).addEventListener('input', renderPassport));
+  $('downloadPassport').addEventListener('click', async () => {
+    if (!passportSource) return;
+    try {
+      const d = passportDimensions();
+      const out = document.createElement('canvas'); out.width = d.w; out.height = d.h;
+      const c = out.getContext('2d'); c.fillStyle = '#fff'; c.fillRect(0, 0, d.w, d.h); drawFitted(c, passportSource, d.w, d.h, 'cover', '#fff');
+      const blob = await canvasBlob(out, 'image/jpeg', .95);
+      const url = URL.createObjectURL(blob); activeObjectUrls.add(url);
+      const a = document.createElement('a'); a.href = url; a.download = `passport-photo-${d.w}x${d.h}.jpg`; a.click();
+      setTimeout(() => { URL.revokeObjectURL(url); activeObjectUrls.delete(url); }, 1500);
+    } catch (error) { $('passportStatus').textContent = error.message; }
+  });
+
+  // Solid-color background removal (local color key, not AI subject segmentation).
+  let bgSource = null, bgSample = null, bgPicking = false, bgRemoved = false;
+  const bgCanvas = $('backgroundCanvas');
+  function updateBgSampleDisplay() {
+    const target = $('bgSampleIndicator'); target.innerHTML = '';
+    if (!bgSample) { target.textContent = 'No background color selected'; return; }
+    const chip = document.createElement('span'); chip.className = 'sample-chip'; chip.style.background = `rgb(${bgSample.join(',')})`;
+    const label = document.createElement('span'); label.textContent = `Sampled RGB ${bgSample.join(', ')}`;
+    target.append(chip, label);
+  }
+  function applyColorKey(targetCanvas, sample, tolerance, feather) {
+    if (!sample) throw new Error('Sample the background color first.');
+    if (targetCanvas.width * targetCanvas.height > 30000000) throw new Error('This image is too large for in-browser background removal. Try an image below 30 megapixels.');
+    const c = targetCanvas.getContext('2d', { willReadFrequently: true });
+    const image = c.getImageData(0, 0, targetCanvas.width, targetCanvas.height);
+    const d = image.data, end = tolerance + feather;
+    for (let i = 0; i < d.length; i += 4) {
+      const dr = d[i] - sample[0], dg = d[i + 1] - sample[1], db = d[i + 2] - sample[2];
+      const distance = Math.sqrt(dr * dr + dg * dg + db * db);
+      if (distance <= tolerance) d[i + 3] = 0;
+      else if (feather > 0 && distance < end) d[i + 3] = Math.round(d[i + 3] * (distance - tolerance) / feather);
+    }
+    c.putImageData(image, 0, 0);
+  }
+  function drawBgPreview(remove = bgRemoved) {
+    if (!bgSource) return;
+    const { width, height } = sourceSize(bgSource);
+    const scale = Math.min(1, 1000 / Math.max(width, height));
+    bgCanvas.width = Math.max(1, Math.round(width * scale)); bgCanvas.height = Math.max(1, Math.round(height * scale));
+    const c = bgCanvas.getContext('2d'); c.clearRect(0, 0, bgCanvas.width, bgCanvas.height);
+    c.drawImage(bgSource, 0, 0, bgCanvas.width, bgCanvas.height);
+    if (remove && bgSample) applyColorKey(bgCanvas, bgSample, Number($('bgTolerance').value), Number($('bgFeather').value));
+    $('bgDownload').disabled = !bgRemoved;
+  }
+  $('backgroundFile').addEventListener('change', async () => {
+    const file = $('backgroundFile').files[0]; if (!file) return;
+    try {
+      bgSource?.close?.(); bgSource = await loadBitmap(file); bgSample = null; bgRemoved = false; bgPicking = false;
+      $('bgAutoSample').disabled = $('bgPickSample').disabled = $('bgReset').disabled = $('bgRemove').disabled = false;
+      $('bgDownload').disabled = true; $('bgStatus').textContent = `${file.name} loaded · sample its plain background color.`;
+      updateBgSampleDisplay(); drawBgPreview(false);
+    } catch (error) { $('bgStatus').textContent = error.message; }
+  });
+  $('bgAutoSample').addEventListener('click', () => {
+    if (!bgSource) return;
+    const { width, height } = sourceSize(bgSource);
+    const sampleCanvas = document.createElement('canvas'); sampleCanvas.width = Math.min(width, 600); sampleCanvas.height = Math.min(height, 600);
+    const c = sampleCanvas.getContext('2d', { willReadFrequently: true }); c.drawImage(bgSource, 0, 0, sampleCanvas.width, sampleCanvas.height);
+    const img = c.getImageData(0, 0, sampleCanvas.width, sampleCanvas.height), data = img.data;
+    const patch = Math.max(3, Math.min(12, Math.floor(Math.min(sampleCanvas.width, sampleCanvas.height) / 8)));
+    const corners = [[0,0],[sampleCanvas.width-patch,0],[0,sampleCanvas.height-patch],[sampleCanvas.width-patch,sampleCanvas.height-patch]];
+    let best = null;
+    for (const [ox,oy] of corners) {
+      let r=0,g=0,b=0,n=0;
+      for (let y=oy;y<oy+patch;y++) for (let x=ox;x<ox+patch;x++) { const i=(y*sampleCanvas.width+x)*4; r+=data[i];g+=data[i+1];b+=data[i+2];n++; }
+      const mean=[r/n,g/n,b/n]; let variance=0;
+      for (let y=oy;y<oy+patch;y++) for (let x=ox;x<ox+patch;x++) { const i=(y*sampleCanvas.width+x)*4; variance+=(data[i]-mean[0])**2+(data[i+1]-mean[1])**2+(data[i+2]-mean[2])**2; }
+      variance/=n;
+      if (!best || variance<best.variance) best={sample:mean.map(Math.round),variance};
+    }
+    bgSample=best.sample; bgRemoved=false; updateBgSampleDisplay(); drawBgPreview(false);
+    $('bgStatus').textContent='Background color sampled from the most uniform corner. Check the sample before removing.';
+  });
+  $('bgPickSample').addEventListener('click', () => {
+    if (!bgSource) return;
+    bgPicking = true; $('bgStatus').textContent = 'Click a point on the preview that belongs to the background.';
+    bgCanvas.style.cursor = 'crosshair';
+  });
+  bgCanvas.addEventListener('click', event => {
+    if (!bgPicking) return;
+    const rect = bgCanvas.getBoundingClientRect();
+    const x = Math.max(0, Math.min(bgCanvas.width-1, Math.floor((event.clientX-rect.left)/rect.width*bgCanvas.width)));
+    const y = Math.max(0, Math.min(bgCanvas.height-1, Math.floor((event.clientY-rect.top)/rect.height*bgCanvas.height)));
+    const d = bgCanvas.getContext('2d', {willReadFrequently:true}).getImageData(x,y,1,1).data;
+    bgSample=[d[0],d[1],d[2]]; bgPicking=false; bgRemoved=false; bgCanvas.style.cursor='default';
+    updateBgSampleDisplay(); drawBgPreview(false); $('bgStatus').textContent='Color sampled. Click Remove background to preview the result.';
+  });
+  $('bgRemove').addEventListener('click', () => {
+    if (!bgSource || !bgSample) { $('bgStatus').textContent='Choose or sample a background color first.'; return; }
+    try { bgRemoved=true; drawBgPreview(true); $('bgDownload').disabled=false; $('bgStatus').textContent='Color key applied. Increase tolerance to remove more background, or adjust edge softness.'; }
+    catch(error) { bgRemoved=false; $('bgStatus').textContent=error.message; }
+  });
+  $('bgReset').addEventListener('click', () => { bgRemoved=false; drawBgPreview(false); $('bgDownload').disabled=true; $('bgStatus').textContent='Preview reset. Your original image is unchanged.'; });
+  ['bgTolerance','bgFeather'].forEach(id => $(id).addEventListener('input', () => {
+    $(id+'Value').textContent=$(id).value;
+    if (bgRemoved) { try { drawBgPreview(true); } catch(error) { $('bgStatus').textContent=error.message; } }
+  }));
+  $('bgDownload').addEventListener('click', async () => {
+    if (!bgSource || !bgSample) return;
+    try {
+      const {width,height}=sourceSize(bgSource);
+      const out=document.createElement('canvas'); out.width=width; out.height=height;
+      out.getContext('2d',{willReadFrequently:true}).drawImage(bgSource,0,0);
+      applyColorKey(out,bgSample,Number($('bgTolerance').value),Number($('bgFeather').value));
+      const blob=await canvasBlob(out,'image/png'); const url=URL.createObjectURL(blob); activeObjectUrls.add(url);
+      const a=document.createElement('a'); a.href=url; a.download='background-removed.png'; a.click();
+      setTimeout(()=>{URL.revokeObjectURL(url);activeObjectUrls.delete(url);},1500);
+      $('bgStatus').textContent='Transparent PNG downloaded.';
+    } catch(error) { $('bgStatus').textContent=error.message; }
+  });
+
+  // Independent watermark editor with optional transparent logo image.
+  let wmSource = null, wmLogo = null;
+  const wmCanvas = $('watermarkCanvas');
+  function drawWatermark(ctx, width, height) {
+    const text = $('watermarkText').value.trim();
+    const position = $('watermarkPosition').value;
+    const opacity = Number($('watermarkOpacity').value) / 100;
+    const color = $('watermarkColor').value;
+    const size = Math.max(10, width * Number($('watermarkSize').value) / 100);
+    const margin = Math.max(12, size * .7);
+    ctx.save(); ctx.globalAlpha = opacity; ctx.fillStyle = color; ctx.textBaseline = 'middle';
+    ctx.font = `700 ${size}px Arial, sans-serif`;
+    if (text && position === 'tile') {
+      ctx.textAlign = 'center';
+      for (let y=size;y<height+size;y+=size*3) for(let x=size;x<width+size;x+=size*5) ctx.fillText(text,x,y);
+    } else if (text) {
+      const align = position.endsWith('left') ? 'left' : position.endsWith('right') ? 'right' : 'center';
+      const x = position.endsWith('left') ? margin : position.endsWith('right') ? width-margin : width/2;
+      const y = position.startsWith('top') ? margin+size/2 : position.startsWith('bottom') ? height-margin-size/2 : height/2;
+      ctx.textAlign=align; ctx.shadowColor='rgba(0,0,0,.55)'; ctx.shadowBlur=Math.max(2,size*.12); ctx.fillText(text,x,y,width-margin*2);
+    }
+    ctx.restore();
+    if (wmLogo) {
+      const maxW=width*.18, maxH=height*.18, scale=Math.min(maxW/(wmLogo.width||wmLogo.naturalWidth),maxH/(wmLogo.height||wmLogo.naturalHeight));
+      const lw=(wmLogo.width||wmLogo.naturalWidth)*scale, lh=(wmLogo.height||wmLogo.naturalHeight)*scale;
+      ctx.save(); ctx.globalAlpha=opacity; ctx.drawImage(wmLogo, Math.max(8,width-lw-margin), Math.max(8,height-lh-margin),lw,lh); ctx.restore();
+    }
+  }
+  function renderWatermark(target, scaleLimit = 1200) {
+    if (!wmSource) return;
+    const {width,height}=sourceSize(wmSource); const scale=Math.min(1,scaleLimit/Math.max(width,height));
+    target.width=Math.max(1,Math.round(width*scale)); target.height=Math.max(1,Math.round(height*scale));
+    const c=target.getContext('2d'); c.clearRect(0,0,target.width,target.height); c.drawImage(wmSource,0,0,target.width,target.height);
+    drawWatermark(c,target.width,target.height);
+    $('downloadWatermark').disabled=false;
+  }
+  $('watermarkFile').addEventListener('change', async () => {
+    const file=$('watermarkFile').files[0]; if(!file)return;
+    try { wmSource?.close?.(); wmSource=await loadBitmap(file); renderWatermark(wmCanvas); $('watermarkStatus').textContent=`${file.name} loaded · preview updates as you edit.`; }
+    catch(error){$('watermarkStatus').textContent=error.message;}
+  });
+  $('watermarkLogo').addEventListener('change', async () => {
+    const file=$('watermarkLogo').files[0]; if(!file)return;
+    try { wmLogo?.close?.(); wmLogo=await loadBitmap(file); if(wmSource)renderWatermark(wmCanvas); $('watermarkStatus').textContent='Logo loaded and added to the watermark preview.'; }
+    catch(error){$('watermarkStatus').textContent=error.message;}
+  });
+  $('watermarkOpacity').addEventListener('input',()=> $('watermarkOpacityValue').textContent=$('watermarkOpacity').value+'%');
+  $('watermarkSize').addEventListener('input',()=> $('watermarkSizeValue').textContent=$('watermarkSize').value+'%');
+  ['watermarkText','watermarkPosition','watermarkColor','watermarkOpacity','watermarkSize'].forEach(id => $(id).addEventListener('input',()=>{if(wmSource)renderWatermark(wmCanvas);}));
+  $('downloadWatermark').addEventListener('click',async()=>{
+    if(!wmSource)return;
+    try { const {width,height}=sourceSize(wmSource); const out=document.createElement('canvas'); out.width=width;out.height=height;const c=out.getContext('2d');c.drawImage(wmSource,0,0);drawWatermark(c,width,height);const blob=await canvasBlob(out,'image/png');const url=URL.createObjectURL(blob);activeObjectUrls.add(url);const a=document.createElement('a');a.href=url;a.download='watermarked-image.png';a.click();setTimeout(()=>{URL.revokeObjectURL(url);activeObjectUrls.delete(url);},1500);$('watermarkStatus').textContent='Watermarked PNG downloaded.';}
+    catch(error){$('watermarkStatus').textContent=error.message;}
+  });
+
+  // Clean up generated object URLs and free decoded image buffers on page exit.
+  window.addEventListener('beforeunload', () => {
+    activeObjectUrls.forEach(url => URL.revokeObjectURL(url));
+    passportSource?.close?.(); bgSource?.close?.(); wmSource?.close?.(); wmLogo?.close?.();
+  });
+})();
+</script>
+
+
+<div class="modal-backdrop" id="moreToolsModal" role="dialog" aria-modal="true" aria-labelledby="moreToolsTitle">
+  <div class="modal-card">
+    <div class="section-heading"><div><div class="eyebrow">PIXELCRAFT TOOLBOX</div><h2 id="moreToolsTitle" style="margin:0;font-size:21px">What would you like to create?</h2><p class="subtitle">Choose a tool to continue. Your photos stay in this browser.</p></div><button class="mini-action" id="closeToolsModal" type="button" aria-label="Close tools"><i data-lucide="x"></i></button></div>
+    <div class="modal-grid">
+      <button class="modal-tool" data-open-tool="batchTool"><i data-lucide="layers"></i><strong>Batch resizer</strong><small>Resize multiple images together</small></button>
+      <button class="modal-tool" data-open-tool="collageTool"><i data-lucide="layout-grid"></i><strong>Collage maker</strong><small>Combine photos into a layout</small></button>
+      <button class="modal-tool" data-open-tool="memeTool"><i data-lucide="type"></i><strong>Meme generator</strong><small>Add classic top and bottom captions</small></button>
+      <button class="modal-tool" data-open-tool="compressTool"><i data-lucide="file-down"></i><strong>Bulk compression</strong><small>Reduce file sizes in a batch</small></button>
+      <button class="modal-tool" data-open-tool="convertTool"><i data-lucide="repeat"></i><strong>Format converter</strong><small>JPG, PNG and WebP outputs</small></button>
+      <button class="modal-tool" data-open-tool="passportTool"><i data-lucide="contact"></i><strong>ID photo maker</strong><small>Print-size passport photos</small></button>
+    </div>
+  </div>
+</div>
+<div class="consent-banner" id="cookieConsent" role="dialog" aria-modal="false" aria-labelledby="consentTitle" aria-describedby="consentDescription" aria-live="polite">
+  <div class="consent-intro">
+    <i data-lucide="cookie" aria-hidden="true"></i>
+    <div><strong id="consentTitle" tabindex="-1">Your privacy choices</strong>
+      <p id="consentDescription">Essential storage keeps this preference. Optional analytics and advertising are off unless you choose them. This version does not currently load analytics or advertising scripts.</p>
+      <a href="privacy.html">Read the Privacy Policy</a>
+    </div>
+  </div>
+  <div id="consentPreferences" hidden>
+    <div class="consent-choice"><div><strong>Essential storage</strong><small>Required to remember your privacy choices and keep the editor working.</small></div><label class="switch-label"><input type="checkbox" checked disabled aria-label="Essential storage always active"><span>Always on</span></label></div>
+    <div class="consent-choice"><div><strong>Analytics</strong><small>Optional measurement scripts, only if added by the site operator.</small></div><label class="switch-label"><input type="checkbox" id="pcConsentAnalytics"><span>Allow</span></label></div>
+    <div class="consent-choice"><div><strong>Advertising</strong><small>Optional advertising technologies, only if added by the site operator.</small></div><label class="switch-label"><input type="checkbox" id="pcConsentAds"><span>Allow</span></label></div>
+    <p class="consent-disclaimer">Saving a preference does not activate scripts in this build. This simple panel is not a certified consent-management platform. Before activating personalized advertising in regions where Google requires one, deploy a suitable certified CMP.</p>
+    <button class="consent-save" id="saveCookiePrefs" type="button">Save my choices</button>
+  </div>
+  <div class="consent-actions"><button class="consent-reject" id="rejectCookies" type="button">Reject optional</button><button class="consent-settings" id="cookieSettings" type="button" aria-expanded="false">Manage choices</button><button class="consent-accept" id="acceptCookies" type="button">Accept optional</button></div>
+</div>
+<script src="pixelcraft-enhancements.js"></script>
+
+</body>
+</html>
