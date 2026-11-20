@@ -296,10 +296,14 @@
     document.head.appendChild(script);
   }
   const saveConsent=(choice,analytics=false,ads=false)=>{
+    const adsWereLoaded=adsenseLoadStarted||Boolean(document.getElementById('pixelcraft-adsense-script'));
     consentState={choice,essential:true,analytics:Boolean(analytics),advertising:Boolean(ads),updatedAt:new Date().toISOString()};
     try{localStorage.setItem(consentKey,JSON.stringify(consentState));}catch(_){toast('Your preference is active for this visit, but browser storage is unavailable.');}
     if(consentState.advertising)loadAdSenseAfterConsent();
     paintConsentControls();$('consentPreferences').hidden=true;$('cookieSettings').setAttribute('aria-expanded','false');consent.classList.remove('show');emitConsent();
+    // A loaded third-party library cannot be reliably unloaded in-place. Reload
+    // after saving a withdrawal so the next page load starts with ads disabled.
+    if(!consentState.advertising && adsWereLoaded) window.location.reload();
   };
   window.PixelCraftConsent={get:()=>({...consentState}),allows:category=>category==='essential'?true:category==='analytics'?Boolean(consentState.analytics):category==='advertising'?Boolean(consentState.advertising):false};
   paintConsentControls();
