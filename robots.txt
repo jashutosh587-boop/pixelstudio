@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://precious-cranachan-c4db3e.netlify.app/sitemap.xml
